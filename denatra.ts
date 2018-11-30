@@ -1,46 +1,5 @@
 import { serve } from 'https://deno.land/x/net/http.ts';
-
-type StatusBodyResponse = [number, string];
-
-type StatusHeadersBodyResponse = [number, Headers, string];
-
-type Response =
-  | StatusHeadersBodyResponse
-  | StatusBodyResponse
-  | number
-  | string;
-
-const getStatusHeadersBodyResponse = (
-  res: Response
-): StatusHeadersBodyResponse => {
-  const r = res as StatusHeadersBodyResponse;
-  if (r.length && r.length === 3) {
-    return r;
-  }
-  return null;
-};
-
-const getStatusBodyResponse = (res: Response): StatusBodyResponse => {
-  const r = res as StatusBodyResponse;
-  if (r.length && r.length === 2) {
-    return r;
-  }
-  return null;
-};
-
-const getNumberResponse = (res: Response): number => {
-  if (typeof res === 'number') {
-    return res;
-  }
-  return null;
-};
-
-const getStringResponse = (res: Response): string => {
-  if (typeof res === 'string') {
-    return res;
-  }
-  return null;
-};
+import { Response, processResponse } from './response';
 
 enum Method {
   GET = 'GET',
@@ -53,10 +12,14 @@ enum Method {
   UNLINK = 'UNLINK',
 }
 
+interface Params {
+  [key: string]: any;
+}
+
 type Context = {
   readonly path: string;
   readonly method: Method;
-  params?: Object;
+  params?: Params;
 };
 
 interface Handler {
@@ -105,54 +68,35 @@ export class App {
     (async () => {
       for await (const req of s) {
         const method = req.method as Method;
-        const path = req.url;
-        const map = this.handlerMap[method];
         const res = ((): Response => {
+          const map = this.handlerMap[method];
           if (!map) {
             return errNotFound;
           }
+
+          if (!req.url) {
+            return errNotFound;
+          }
+          const [path, search] = req.url.split(/\?(.+)/);
+
           const handler = map[path];
           if (!handler) {
             return errNotFound;
           }
-          const ctx = { method, path };
+
+          let params: Params = {};
+          if (method === Method.GET && search) {
+            for (const [key, value] of new URLSearchParams(
+              `?${search}`
+            ).entries()) {
+              params[key] = value;
+            }
+          }
+
+          const ctx = { method, path, params };
           return handler(ctx);
         })();
-        let status = 200;
-        let headers: Headers;
-        let rawBody = '';
-        (() => {
-          {
-            const r = getStatusHeadersBodyResponse(res);
-            if (r) {
-              [status, headers, rawBody] = r;
-              return;
-            }
-          }
-          {
-            const r = getStatusBodyResponse(res);
-            if (r) {
-              [status, rawBody] = r;
-              return;
-            }
-          }
-          {
-            const r = getNumberResponse(res);
-            if (r) {
-              status = r;
-              return;
-            }
-          }
-          {
-            const r = getStringResponse(res);
-            if (r) {
-              rawBody = r;
-              return;
-            }
-          }
-        })();
-        const body = new TextEncoder().encode(rawBody);
-        await req.respond({ status, body });
+        await req.respond(processResponse(res));
       }
     })();
   }

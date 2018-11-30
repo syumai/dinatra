@@ -1,8 +1,12 @@
-import { app, get } from 'https://raw.githubusercontent.com/syumai/denatra/master/denatra.ts';
+import { app, get } from '../denatra.ts';
 
 app(
   get('/hello', () => 'hello'),
-  get('/world', () => 'world'),
-  get('/fuga', () => 'fuga'),
-  get('/hoge', () => 'hoge')
+  get('/error', () => [500, 'an error has occured']),
+  get('/callName', ({ params }) => `Hi, ${params.name}!`),
+  get('/info', () => [
+    200,
+    { 'Content-Type': 'application/json' },
+    JSON.stringify({ app: 'denatra', version: '0.0.1' }),
+  ])
 );
