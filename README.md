@@ -1,4 +1,4 @@
-# denatra
+# dinatra
 
 - [Sinatra](http://sinatrarb.com/) like light weight web app framework for [deno](https://github.com/denoland/deno).
 - This app using [Deno Networking Libraries](https://github.com/denoland/net).
@@ -18,7 +18,7 @@
 import {
   app,
   get,
-} from 'https://syumai.github.io/denatra/denatra.ts';
+} from 'https://syumai.github.io/dinatra/dinatra.ts';
 
 app(
   get('/hello', () => 'hello'),
@@ -27,7 +27,7 @@ app(
   get('/info', () => [
     200,
     { 'Content-Type': 'application/json' },
-    JSON.stringify({ app: 'denatra', version: '0.0.1' }),
+    JSON.stringify({ app: 'dinatra', version: '0.0.1' }),
   ])
 );
 ```
@@ -51,7 +51,7 @@ curl http://localhost:8080/callName?name=John
 curl http://localhost:8080/info
 # status: 200
 # content-type: application/json
-# body: {"app":"denatra","version":"0.0.1"}
+# body: {"app":"dinatra","version":"0.0.1"}
 ```
 
 ## Response Types

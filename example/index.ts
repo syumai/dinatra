@@ -1,4 +1,4 @@
-import { app, get } from '../denatra.ts';
+import { app, get } from '../dinatra.ts';
 
 app(
   get('/hello', () => 'hello'),
@@ -7,6 +7,6 @@ app(
   get('/info', () => [
     200,
     { 'Content-Type': 'application/json' },
-    JSON.stringify({ app: 'denatra', version: '0.0.1' }),
+    JSON.stringify({ app: 'dinatra', version: '0.0.1' }),
   ])
 );
