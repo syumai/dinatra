@@ -22,7 +22,7 @@ import {
 
 app(
   get('/hello', () => 'hello'),
-  get('/error', () => [500, 'an error has occured'])
+  get('/error', () => [500, 'an error has occured']),
   get('/callName', ({ params }) => `Hi, ${params.name}!`),
   get('/info', () => [
     200,
