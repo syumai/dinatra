@@ -1,5 +1,6 @@
 import { serve } from 'https://deno.land/x/net/http.ts';
 import { Response, processResponse } from './response';
+import { ErrorCode, getErrorMessage } from './errors';
 
 enum Method {
   GET = 'GET',
@@ -68,34 +69,45 @@ export class App {
     (async () => {
       for await (const req of s) {
         const method = req.method as Method;
-        const res = ((): Response => {
-          const map = this.handlerMap[method];
-          if (!map) {
-            return errNotFound;
-          }
-
-          if (!req.url) {
-            return errNotFound;
-          }
-          const [path, search] = req.url.split(/\?(.+)/);
-
-          const handler = map[path];
-          if (!handler) {
-            return errNotFound;
-          }
-
-          let params: Params = {};
-          if (method === Method.GET && search) {
-            for (const [key, value] of new URLSearchParams(
-              `?${search}`
-            ).entries()) {
-              params[key] = value;
+        let res: Response;
+        try {
+          res = ((): Response => {
+            if (!req.url) {
+              throw ErrorCode.NotFound;
             }
-          }
+            const [path, search] = req.url.split(/\?(.+)/);
 
-          const ctx = { method, path, params };
-          return handler(ctx);
-        })();
+            const map = this.handlerMap[method];
+            if (!map) {
+              throw ErrorCode.NotFound;
+            }
+
+            const handler = map[path];
+            if (!handler) {
+              throw ErrorCode.NotFound;
+            }
+
+            let params: Params = {};
+            if (method === Method.GET && search) {
+              for (const [key, value] of new URLSearchParams(
+                `?${search}`
+              ).entries()) {
+                params[key] = value;
+              }
+            }
+
+            const ctx = { method, path, params };
+            return handler(ctx);
+          })();
+        } catch (err) {
+          res = ((): Response => {
+            let status = ErrorCode.InternalServerError;
+            if (typeof err === 'number') {
+              status = err;
+            }
+            return [status, getErrorMessage(status)];
+          })();
+        }
         await req.respond(processResponse(res));
       }
     })();
