@@ -1,31 +1,10 @@
 import { serve } from 'https://deno.land/x/net/http.ts';
 import { Response, processResponse } from './response';
 import { ErrorCode, getErrorMessage } from './errors';
+import { Method, Params, Context, Handler, HandlerConfig } from './handler';
+export { get, post, put, patch, del, options, link, unlink } from './handler';
 
-enum Method {
-  GET = 'GET',
-  POST = 'POST',
-  PUT = 'PUT',
-  PATCH = 'PATCH',
-  DELETE = 'DELETE',
-  OPTIONS = 'OPTIONS',
-  LINK = 'LINK',
-  UNLINK = 'UNLINK',
-}
-
-interface Params {
-  [key: string]: any;
-}
-
-type Context = {
-  readonly path: string;
-  readonly method: Method;
-  params?: Params;
-};
-
-interface Handler {
-  (ctx?: Context): Response;
-}
+const defaultPort = '8080';
 
 type HandlerMap = {
   [method: string]: {
@@ -33,13 +12,9 @@ type HandlerMap = {
   };
 };
 
-const defaultPort = '8080';
-
-const errNotFound: Response = [404, 'Not Found'];
-
-export async function app(...handlerSets: HandlerSet[]) {
+export async function app(...handlerConfigs: HandlerConfig[]) {
   const a = new App(defaultPort);
-  a.handle(...handlerSets);
+  a.handle(...handlerConfigs);
   return await a.serve();
 }
 
@@ -54,9 +29,8 @@ export class App {
     this.handlerMap = handlerMap;
   }
 
-  public handle(...handlerSets: HandlerSet[]) {
-    for (const { context, handler } of handlerSets) {
-      const { path, method } = context;
+  public handle(...handlerConfigs: HandlerConfig[]) {
+    for (const { path, method, handler } of handlerConfigs) {
       this.handlerMap[method][path] = handler;
     }
   }
@@ -87,7 +61,7 @@ export class App {
               throw ErrorCode.NotFound;
             }
 
-            let params: Params = {};
+            const params: Params = {};
             if (method === Method.GET && search) {
               for (const [key, value] of new URLSearchParams(
                 `?${search}`
@@ -96,7 +70,7 @@ export class App {
               }
             }
 
-            const ctx = { method, path, params };
+            const ctx = { path, method, params };
             return handler(ctx);
           })();
         } catch (err) {
@@ -112,49 +86,4 @@ export class App {
       }
     })();
   }
-}
-
-type HandlerSet = {
-  context: Context;
-  handler: Handler;
-};
-
-export function get(path: string, handler: Handler): HandlerSet {
-  const context = { path: path, method: Method.GET };
-  return { context, handler };
-}
-
-export function post(path: string, handler: Handler): HandlerSet {
-  const context = { path: path, method: Method.POST };
-  return { context, handler };
-}
-
-export function put(path: string, handler: Handler): HandlerSet {
-  const context = { path: path, method: Method.PUT };
-  return { context, handler };
-}
-
-export function patch(path: string, handler: Handler): HandlerSet {
-  const context = { path: path, method: Method.PATCH };
-  return { context, handler };
-}
-
-export function del(path: string, handler: Handler): HandlerSet {
-  const context = { path: path, method: Method.DELETE };
-  return { context, handler };
-}
-
-export function options(path: string, handler: Handler): HandlerSet {
-  const context = { path: path, method: Method.OPTIONS };
-  return { context, handler };
-}
-
-export function link(path: string, handler: Handler): HandlerSet {
-  const context = { path: path, method: Method.LINK };
-  return { context, handler };
-}
-
-export function unlink(path: string, handler: Handler): HandlerSet {
-  const context = { path: path, method: Method.UNLINK };
-  return { context, handler };
 }
