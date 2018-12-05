@@ -15,10 +15,7 @@
 `example/index.ts`
 
 ```ts
-import {
-  app,
-  get,
-} from 'https://syumai.github.io/dinatra/dinatra.ts';
+import { app, get } from 'https://syumai.github.io/dinatra/dinatra.ts';
 
 app(
   get('/hello', () => 'hello'),
@@ -65,4 +62,10 @@ export type Response =
 
 type StatusHeadersBodyResponse = [number, HeaderMap, string];
 type StatusBodyResponse = [number, string];
+
+type HeaderMap =
+  | Headers
+  | {
+      [key: string]: any;
+    };
 ```

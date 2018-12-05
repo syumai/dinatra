@@ -1,6 +1,8 @@
-type HeaderMap = {
-  [key: string]: any;
-};
+type HeaderMap =
+  | Headers
+  | {
+      [key: string]: any;
+    };
 
 type StatusHeadersBodyResponse = [number, HeaderMap, string];
 

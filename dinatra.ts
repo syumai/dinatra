@@ -6,7 +6,7 @@ export { get, post, put, patch, del, options, link, unlink } from './handler';
 
 const defaultPort = '8080';
 
-type HandlerMap = Map<string, Map<string, Handler>>;
+type HandlerMap = Map<string, Map<string, Handler>>; // Map<method, Map<path, handler>>
 
 export async function app(...handlerConfigs: HandlerConfig[]) {
   const a = new App(defaultPort);
