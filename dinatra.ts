@@ -6,11 +6,7 @@ export { get, post, put, patch, del, options, link, unlink } from './handler';
 
 const defaultPort = '8080';
 
-type HandlerMap = {
-  [method: string]: {
-    [path: string]: Handler;
-  };
-};
+type HandlerMap = Map<string, Map<string, Handler>>;
 
 export async function app(...handlerConfigs: HandlerConfig[]) {
   const a = new App(defaultPort);
@@ -19,19 +15,17 @@ export async function app(...handlerConfigs: HandlerConfig[]) {
 }
 
 export class App {
-  private handlerMap: HandlerMap = {};
+  private handlerMap: HandlerMap = new Map();
 
   constructor(public readonly port = defaultPort) {
-    const handlerMap = {};
     for (const method in Method) {
-      handlerMap[method] = {};
+      this.handlerMap.set(method, new Map());
     }
-    this.handlerMap = handlerMap;
   }
 
   public handle(...handlerConfigs: HandlerConfig[]) {
     for (const { path, method, handler } of handlerConfigs) {
-      this.handlerMap[method][path] = handler;
+      this.handlerMap.get(method).set(path, handler);
     }
   }
 
@@ -51,12 +45,12 @@ export class App {
             }
             const [path, search] = req.url.split(/\?(.+)/);
 
-            const map = this.handlerMap[method];
+            const map = this.handlerMap.get(method);
             if (!map) {
               throw ErrorCode.NotFound;
             }
 
-            const handler = map[path];
+            const handler = map.get(path);
             if (!handler) {
               throw ErrorCode.NotFound;
             }
