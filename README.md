@@ -1,7 +1,7 @@
 # dinatra
 
 - [Sinatra](http://sinatrarb.com/) like light weight web app framework for [deno](https://github.com/denoland/deno).
-- This app using [Deno Networking Libraries](https://github.com/denoland/net).
+- This app using [Deno Standard Modules](https://github.com/denoland/deno_std).
 - **All features of this app is currently experimental**.
 
 ## Status
