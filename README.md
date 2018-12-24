@@ -74,7 +74,7 @@ deno index.ts -p 8000 # or --port 8000
 # App runs on localhost:8000
 ```
 
-## Reponse Types
+## Response Types
 
 ```ts
 // HeaderMap is a type of response headers.
