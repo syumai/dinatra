@@ -21,8 +21,14 @@ export type Context = {
   params?: Params;
 };
 
-export interface Handler {
+export type Handler = BasicHandler | AsyncHandler;
+
+export interface BasicHandler {
   (ctx?: Context): Response;
+}
+
+export interface AsyncHandler {
+  (ctx?: Context): Promise<Response>;
 }
 
 export type HandlerConfig = {

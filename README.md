@@ -58,21 +58,58 @@ deno index.ts -p 8000 # or --port 8000
 # App runs on localhost:8000
 ```
 
-## Response Types
+## Reponse Types
 
 ```ts
-export type Response =
-  | StatusHeadersBodyResponse
-  | StatusBodyResponse
-  | number // HTTP status code only
-  | string; // Response body only
-
-type StatusHeadersBodyResponse = [number, HeaderMap, string];
-type StatusBodyResponse = [number, string];
-
+// HeaderMap is a type of response headers.
 type HeaderMap =
   | Headers
   | {
       [key: string]: any;
     };
+
+// ResponseBody is a type of response body.
+type ResponseBody = string | Reader;
+
+/*
+ *  Types of Response
+ */
+
+// StatusHeadersBodyResponse is a response with status code, headers, body.
+type StatusHeadersBodyResponse = [number, HeaderMap, ResponseBody];
+
+// StatusBodyResponse is a response with status code, body.
+type StatusBodyResponse = [number, ResponseBody];
+
+// Response is a type of response.
+export type Response =
+  | StatusHeadersBodyResponse
+  | StatusBodyResponse
+  | number // HTTP status code only
+  | ResponseBody; // Response body only
+
+// Response interface of deno.land/x/net/http
+interface HTTPResponse {
+  status?: number;
+  headers?: Headers;
+  body?: Uint8Array | Reader;
+}
+```
+
+## Advanced
+
+### Async Handler
+
+- You can use async function as handler.
+
+`example/template/index.ts`
+
+```ts
+import { app, get, post } from '../../dinatra.ts';
+import { cwd, open } from 'deno';
+
+const currentDir = cwd();
+const htmlPath = `${currentDir}/index.html`;
+
+app(get('/', async () => await open(htmlPath)));
 ```
