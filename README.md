@@ -31,7 +31,7 @@ app(
 
 ```console
 deno index.ts
-# This app runs on localhost:8080
+# App runs on localhost:8080
 
 curl http://localhost:8080/hello
 # status: 200
@@ -49,6 +49,13 @@ curl http://localhost:8080/info
 # status: 200
 # content-type: application/json
 # body: {"app":"dinatra","version":"0.0.1"}
+```
+
+## Launch Options
+
+```console
+deno index.ts -p 8000 # or --port 8000
+# App runs on localhost:8000
 ```
 
 ## Response Types
