@@ -2,9 +2,17 @@ import { serve } from 'https://deno.land/x/net/http.ts';
 import { Response, processResponse } from './response.ts';
 import { ErrorCode, getErrorMessage } from './errors.ts';
 import { Method, Params, Context, Handler, HandlerConfig } from './handler.ts';
-export { get, post, put, patch, del, options, link, unlink } from './handler.ts';
-
-const defaultPort = '8080';
+import { defaultPort } from './constants.ts';
+export {
+  get,
+  post,
+  put,
+  patch,
+  del,
+  options,
+  link,
+  unlink,
+} from './handler.ts';
 
 type HandlerMap = Map<string, Map<string, Handler>>; // Map<method, Map<path, handler>>
 
