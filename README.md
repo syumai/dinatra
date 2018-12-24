@@ -105,7 +105,7 @@ interface HTTPResponse {
 `example/template/index.ts`
 
 ```ts
-import { app, get, post } from '../../dinatra.ts';
+import { app, get } from '../../dinatra.ts';
 import { cwd, open } from 'deno';
 
 const currentDir = cwd();
