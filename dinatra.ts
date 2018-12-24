@@ -47,7 +47,7 @@ export class App {
         const method = req.method as Method;
         let res: Response;
         try {
-          res = await ((): Promise<Response> => {
+          res = await (async (): Promise<Response> => {
             if (!req.url) {
               throw ErrorCode.NotFound;
             }
@@ -70,14 +70,18 @@ export class App {
               ).entries()) {
                 params[key] = value;
               }
+            } else {
+              const body = await req.body();
+              // TODO: decode URL formatted string and split by `=`
+              // console.log(new TextDecoder('utf-8').decode(body));
             }
 
             const ctx = { path, method, params };
             const result = handler(ctx);
             if (result instanceof Promise) {
-              return result;
+              return await result;
             }
-            return Promise.resolve(result);
+            return result;
           })();
         } catch (err) {
           res = ((): Response => {
