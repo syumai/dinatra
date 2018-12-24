@@ -51,6 +51,22 @@ curl http://localhost:8080/info
 # body: {"app":"dinatra","version":"0.0.1"}
 ```
 
+### Async Handler
+
+- You can use async function as handler.
+
+[`example/template/index.ts`](https://github.com/syumai/dinatra/tree/master/example/template)
+
+```ts
+import { app, get } from '../../dinatra.ts';
+import { cwd, open } from 'deno';
+
+const currentDir = cwd();
+const htmlPath = `${currentDir}/index.html`;
+
+app(get('/', async () => await open(htmlPath)));
+```
+
 ## Launch Options
 
 ```console
@@ -94,22 +110,4 @@ interface HTTPResponse {
   headers?: Headers;
   body?: Uint8Array | Reader;
 }
-```
-
-## Advanced
-
-### Async Handler
-
-- You can use async function as handler.
-
-`example/template/index.ts`
-
-```ts
-import { app, get } from '../../dinatra.ts';
-import { cwd, open } from 'deno';
-
-const currentDir = cwd();
-const htmlPath = `${currentDir}/index.html`;
-
-app(get('/', async () => await open(htmlPath)));
 ```
