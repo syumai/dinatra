@@ -1,8 +1,8 @@
 import { serve } from 'https://deno.land/x/net/http.ts';
-import { Response, processResponse } from './response';
-import { ErrorCode, getErrorMessage } from './errors';
-import { Method, Params, Context, Handler, HandlerConfig } from './handler';
-export { get, post, put, patch, del, options, link, unlink } from './handler';
+import { Response, processResponse } from './response.ts';
+import { ErrorCode, getErrorMessage } from './errors.ts';
+import { Method, Params, Context, Handler, HandlerConfig } from './handler.ts';
+export { get, post, put, patch, del, options, link, unlink } from './handler.ts';
 
 const defaultPort = '8080';
 
