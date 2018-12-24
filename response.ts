@@ -1,30 +1,43 @@
+import { Reader } from 'deno';
+
+// HeaderMap is a type of response headers.
 type HeaderMap =
   | Headers
   | {
       [key: string]: any;
     };
 
-type StatusHeadersBodyResponse = [number, HeaderMap, string];
+// ResponseBody is a type of response body.
+type ResponseBody = string | Reader;
 
-type StatusBodyResponse = [number, string];
+/*
+ *  Types of Response
+ */
 
+// StatusHeadersBodyResponse is a response with status code, headers, body.
+type StatusHeadersBodyResponse = [number, HeaderMap, ResponseBody];
+
+// StatusBodyResponse is a response with status code, body.
+type StatusBodyResponse = [number, ResponseBody];
+
+// Response is a type of response.
 export type Response =
   | StatusHeadersBodyResponse
   | StatusBodyResponse
   | number // HTTP status code only
-  | string; // Response body only
+  | ResponseBody; // Response body only
 
 // Response interface of deno.land/x/net/http
 interface HTTPResponse {
   status?: number;
   headers?: Headers;
-  body?: Uint8Array;
+  body?: Uint8Array | Reader;
 }
 
 export function processResponse(res: Response): HTTPResponse {
   let status = 200;
   let headerMap: HeaderMap = {};
-  let rawBody = '';
+  let rawBody: ResponseBody = '';
 
   (() => {
     {
@@ -49,6 +62,13 @@ export function processResponse(res: Response): HTTPResponse {
       }
     }
     {
+      const r = getReaderResponse(res);
+      if (r) {
+        rawBody = r;
+        return;
+      }
+    }
+    {
       const r = getStringResponse(res);
       if (r) {
         rawBody = r;
@@ -57,7 +77,12 @@ export function processResponse(res: Response): HTTPResponse {
     }
   })();
 
-  const body = new TextEncoder().encode(rawBody);
+  let body: Uint8Array | Reader;
+  if (typeof rawBody === 'string') {
+    body = new TextEncoder().encode(rawBody);
+  } else {
+    body = rawBody;
+  }
   const headers = new Headers(headerMap);
   return {
     status,
@@ -87,6 +112,14 @@ function getStatusBodyResponse(res: Response): StatusBodyResponse {
 function getNumberResponse(res: Response): number {
   if (typeof res === 'number') {
     return res;
+  }
+  return null;
+}
+
+function getReaderResponse(res: Response): Reader {
+  const r = res as Reader;
+  if (typeof r === 'object' && typeof r.read === 'function') {
+    return r;
   }
   return null;
 }

@@ -1,7 +1,7 @@
 import { serve } from 'https://deno.land/x/net/http.ts';
 import { Response, processResponse } from './response.ts';
 import { ErrorCode, getErrorMessage } from './errors.ts';
-import { Method, Params, Context, Handler, HandlerConfig } from './handler.ts';
+import { Method, Params, Handler, HandlerConfig } from './handler.ts';
 import { defaultPort } from './constants.ts';
 export {
   get,
@@ -47,7 +47,7 @@ export class App {
         const method = req.method as Method;
         let res: Response;
         try {
-          res = ((): Response => {
+          res = await ((): Promise<Response> => {
             if (!req.url) {
               throw ErrorCode.NotFound;
             }
@@ -73,7 +73,11 @@ export class App {
             }
 
             const ctx = { path, method, params };
-            return handler(ctx);
+            const result = handler(ctx);
+            if (result instanceof Promise) {
+              return result;
+            }
+            return Promise.resolve(result);
           })();
         } catch (err) {
           res = ((): Response => {
