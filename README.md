@@ -1,7 +1,7 @@
 # dinatra
 
 - [Sinatra](http://sinatrarb.com/) like light weight web app framework for [deno](https://github.com/denoland/deno).
-- This app using [Deno Standard Modules](https://github.com/denoland/deno_std).
+- This app is using [Deno Standard Modules](https://github.com/denoland/deno_std).
 - **All features of this app is currently experimental**.
 
 ## Status
@@ -70,7 +70,7 @@ app(get('/', async () => await open(htmlPath)));
 ## Launch Options
 
 ```console
-deno index.ts -p 8000 # or --port 8000
+deno index.ts -p 8000 # or --port=8000
 # App runs on localhost:8000
 ```
 
