@@ -72,8 +72,21 @@ export class App {
               }
             } else {
               const body = await req.body();
-              // TODO: decode URL formatted string and split by `=`
-              // console.log(new TextDecoder('utf-8').decode(body));
+              const decodedBody = new TextDecoder('utf-8').decode(body);
+              const contentType = req.headers.get('content-type');
+              switch (contentType) {
+                case 'application/x-www-form-urlencoded':
+                  for (const line of decodedBody.split('\n')) {
+                    const lineParts = line.split(/^(.+?)=(.*)$/);
+                    if (lineParts.length < 3) {
+                      continue;
+                    }
+                    const key = lineParts[1];
+                    const value = decodeURI(lineParts[2]);
+                    params[key] = value;
+                  }
+                  break;
+              }
             }
 
             const ctx = { path, method, params };
