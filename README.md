@@ -4,23 +4,18 @@
 - This app is using [Deno Standard Modules](https://github.com/denoland/deno_std).
 - **All features of this app is currently experimental**.
 
-## Status
-
-**WIP**
-
-- GET only works now.
-
 ## Usage
 
 `example/index.ts`
 
 ```ts
-import { app, get } from 'https://syumai.github.io/dinatra/dinatra.ts';
+import { app, get, post } from 'https://syumai.github.io/dinatra/dinatra.ts';
 
 app(
   get('/hello', () => 'hello'),
   get('/error', () => [500, 'an error has occured']),
   get('/callName', ({ params }) => `Hi, ${params.name}!`),
+  post('/callNamePost', ({ params }) => `Hi, ${params.name}!`),
   get('/info', () => [
     200,
     { 'Content-Type': 'application/json' },
@@ -44,6 +39,10 @@ curl http://localhost:8080/error
 curl http://localhost:8080/callName?name=John
 # status: 200
 # body: Hi, John!
+
+curl -d 'name=Tom' http://localhost:8080/callNamePost
+# status: 200
+# body: Hi, Tom!
 
 curl http://localhost:8080/info
 # status: 200
@@ -111,3 +110,12 @@ interface HTTPResponse {
   body?: Uint8Array | Reader;
 }
 ```
+
+## Status
+
+### Request Params
+
+- [x] URL query params (for GET)
+- [ ] route params (like: `/users/:user_id/posts`)
+- [x] x-www-form-urlencoded
+- [x] application/json

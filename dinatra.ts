@@ -47,7 +47,7 @@ export class App {
         const method = req.method as Method;
         let res: Response;
         try {
-          res = await ((): Promise<Response> => {
+          res = await (async (): Promise<Response> => {
             if (!req.url) {
               throw ErrorCode.NotFound;
             }
@@ -70,14 +70,42 @@ export class App {
               ).entries()) {
                 params[key] = value;
               }
+            } else {
+              const body = await req.body();
+              const decodedBody = new TextDecoder('utf-8').decode(body);
+              const contentType = req.headers.get('content-type');
+              switch (contentType) {
+                case 'application/x-www-form-urlencoded':
+                  for (const line of decodedBody.split('\n')) {
+                    const lineParts = line.split(/^(.+?)=(.*)$/);
+                    if (lineParts.length < 3) {
+                      continue;
+                    }
+                    const key = lineParts[1];
+                    const value = decodeURI(lineParts[2]);
+                    params[key] = value;
+                  }
+                  break;
+                case 'application/json':
+                  let obj: Object;
+                  try {
+                    obj = JSON.parse(decodedBody);
+                  } catch (e) {
+                    throw ErrorCode.BadRequest;
+                  }
+                  for (const [key, value] of Object.entries(obj)) {
+                    params[key] = value;
+                  }
+                  break;
+              }
             }
 
             const ctx = { path, method, params };
             const result = handler(ctx);
             if (result instanceof Promise) {
-              return result;
+              return await result;
             }
-            return Promise.resolve(result);
+            return result;
           })();
         } catch (err) {
           res = ((): Response => {
