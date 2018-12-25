@@ -15,7 +15,7 @@ app(
   get('/hello', () => 'hello'),
   get('/error', () => [500, 'an error has occured']),
   get('/callName', ({ params }) => `Hi, ${params.name}!`),
-  post('/callNamePost', ({ params }) => `Hi, ${params.name}!`),
+  post('/callName', ({ params }) => `Hi, ${params.name}!`),
   get('/info', () => [
     200,
     { 'Content-Type': 'application/json' },
@@ -40,7 +40,7 @@ curl http://localhost:8080/callName?name=John
 # status: 200
 # body: Hi, John!
 
-curl -d 'name=Tom' http://localhost:8080/callNamePost
+curl -d 'name=Tom' http://localhost:8080/callName
 # status: 200
 # body: Hi, Tom!
 
