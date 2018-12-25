@@ -4,12 +4,6 @@
 - This app using [Deno Standard Modules](https://github.com/denoland/deno_std).
 - **All features of this app is currently experimental**.
 
-## Status
-
-**WIP**
-
-- GET only works now.
-
 ## Usage
 
 `example/index.ts`
@@ -111,3 +105,12 @@ interface HTTPResponse {
   body?: Uint8Array | Reader;
 }
 ```
+
+## Status
+
+### Request Params
+
+- [x] URL query params (for GET)
+- [ ] route params (like: `/users/:user_id/posts`)
+- [x] x-www-form-urlencoded
+- [x] application/json

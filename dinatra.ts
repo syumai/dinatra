@@ -86,6 +86,17 @@ export class App {
                     params[key] = value;
                   }
                   break;
+                case 'application/json':
+                  let obj: Object;
+                  try {
+                    obj = JSON.parse(decodedBody);
+                  } catch (e) {
+                    throw ErrorCode.BadRequest;
+                  }
+                  for (const [key, value] of Object.entries(obj)) {
+                    params[key] = value;
+                  }
+                  break;
               }
             }
 
