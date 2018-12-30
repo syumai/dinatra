@@ -66,6 +66,18 @@ const htmlPath = `${currentDir}/index.html`;
 app(get('/', async () => await open(htmlPath)));
 ```
 
+### Template
+
+- You can use [dejs](https://github.com/syumai/dejs) (ejs for deno) as dinatra's template engine.
+
+```ts
+import { renderFile } from 'https://syumai.github.io/dejs/dejs.ts';
+
+app(
+  get('/', async () => await renderFile('index.ejs', { message: 'example' }))
+);
+```
+
 ## Launch Options
 
 ```console
