@@ -1,3 +1,4 @@
+// Key type of MIME Types map
 export type TypeName =
   | '123'
   | '3dml'
@@ -625,6 +626,7 @@ export type TypeName =
   | 'zip'
   | 'zmm';
 
+// MIME Types were brought from `Rack::MIME`: https://www.rubydoc.info/gems/rack/Rack/Mime
 export const TypeMap = new Map<string, string>(
   Object.entries({
     '123': 'application/vnd.lotus-1-2-3',
