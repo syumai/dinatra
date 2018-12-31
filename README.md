@@ -9,7 +9,12 @@
 `example/index.ts`
 
 ```ts
-import { app, get, post } from 'https://syumai.github.io/dinatra/dinatra.ts';
+import {
+  app,
+  get,
+  post,
+  contentType,
+} from 'https://syumai.github.io/dinatra/dinatra.ts';
 
 app(
   get('/hello', () => 'hello'),
@@ -18,7 +23,7 @@ app(
   post('/callName', ({ params }) => `Hi, ${params.name}!`),
   get('/info', () => [
     200,
-    { 'Content-Type': 'application/json' },
+    contentType('json'),
     JSON.stringify({ app: 'dinatra', version: '0.0.1' }),
   ])
 );

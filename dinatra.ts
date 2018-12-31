@@ -3,6 +3,7 @@ import { Response, processResponse } from './response.ts';
 import { ErrorCode, getErrorMessage } from './errors.ts';
 import { Method, Params, Handler, HandlerConfig } from './handler.ts';
 import { defaultPort } from './constants.ts';
+export { contentType } from './mime.ts';
 export {
   get,
   post,
