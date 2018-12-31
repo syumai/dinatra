@@ -1,5 +1,4 @@
-import { app, get, post } from '../dinatra.ts';
-import { contentType } from '../mime.ts';
+import { app, get, post, contentType } from '../dinatra.ts';
 
 app(
   get('/hello', () => 'hello'),
