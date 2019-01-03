@@ -1266,5 +1266,10 @@ export const TypeMap = new Map<string, string>(
 export const contentType = (
   mimeType: TypeName
 ): { 'Content-Type': string } => ({
-  'Content-Type': TypeMap.get(mimeType),
+  'Content-Type': TypeMap.get(mimeType) || 'application/octet-stream',
 });
+
+export const detectedContentType = (
+  fileName: string
+): { 'Content-Type': string } =>
+  contentType(fileName.split('.').pop() as TypeName);

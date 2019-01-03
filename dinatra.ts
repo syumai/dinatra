@@ -1,9 +1,11 @@
 import { serve } from 'https://deno.land/x/net/http.ts';
+import { stat, FileInfo, open } from 'deno';
 import { Response, processResponse } from './response.ts';
 import { ErrorCode, getErrorMessage } from './errors.ts';
 import { Method, Params, Handler, HandlerConfig } from './handler.ts';
 import { defaultPort } from './constants.ts';
-export { contentType } from './mime.ts';
+import { detectedContentType } from './mime.ts';
+export { contentType, detectedContentType } from './mime.ts';
 export {
   get,
   post,
@@ -26,7 +28,10 @@ export async function app(...handlerConfigs: HandlerConfig[]) {
 export class App {
   private handlerMap: HandlerMap = new Map();
 
-  constructor(public readonly port = defaultPort) {
+  constructor(
+    public readonly port = defaultPort,
+    public readonly publicDir = 'public'
+  ) {
     for (const method in Method) {
       this.handlerMap.set(method, new Map());
     }
@@ -53,6 +58,30 @@ export class App {
               throw ErrorCode.NotFound;
             }
             const [path, search] = req.url.split(/\?(.+)/);
+
+            let fileInfo: FileInfo;
+            let staticFilePath = `${this.publicDir}${path}`;
+            try {
+              fileInfo = await stat(staticFilePath);
+            } catch (e) {
+              // Do nothing here.
+            }
+            if (fileInfo && fileInfo.isDirectory()) {
+              staticFilePath += '/index.html';
+              try {
+                fileInfo = await stat(staticFilePath);
+              } catch (e) {
+                // Do nothing here.
+              }
+            }
+            if (fileInfo && fileInfo.isFile()) {
+              return [
+                200,
+                // Add content length
+                detectedContentType(staticFilePath),
+                await open(staticFilePath),
+              ];
+            }
 
             const map = this.handlerMap.get(method);
             if (!map) {
