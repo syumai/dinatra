@@ -66,5 +66,6 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   }
 
   await sleep(500);
+  // TODO: stop server gracefully.
   exit(0);
 })();
