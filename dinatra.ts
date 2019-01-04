@@ -60,8 +60,10 @@ export class App {
     }
     return [
       200,
-      // Add content length
-      detectedContentType(staticFilePath),
+      {
+        'Content-Length': fileInfo.len.toString(),
+        ...detectedContentType(staticFilePath),
+      },
       await open(staticFilePath),
     ];
   }
