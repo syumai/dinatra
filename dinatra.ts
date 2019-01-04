@@ -1,4 +1,4 @@
-import { serve, ServerRequest } from 'https://deno.land/x/net/http.ts';
+import { listenAndServe, ServerRequest } from 'https://deno.land/x/net/http.ts';
 import { stat, FileInfo, open } from 'deno';
 import { Response, processResponse } from './response.ts';
 import { ErrorCode, getErrorMessage } from './errors.ts';
@@ -133,30 +133,27 @@ export class App {
 
   public async serve() {
     const addr = `0.0.0.0:${this.port}`;
-    const s = serve(addr);
-    console.log(`listening on http://${addr}/`);
-
-    (async () => {
-      for await (const req of s) {
-        const method = req.method as Method;
-        let res: Response;
-        if (!req.url) {
-          throw ErrorCode.NotFound;
-        }
-        const [path, search] = req.url.split(/\?(.+)/);
-        try {
-          res =
-            (await this.respondStatic(path)) ||
-            (await this.respond(path, search, method, req));
-        } catch (err) {
-          let status = ErrorCode.InternalServerError;
-          if (typeof err === 'number') {
-            status = err;
-          }
-          res = [status, getErrorMessage(status)];
-        }
-        await req.respond(processResponse(res));
+    const p = listenAndServe(addr, async (req: ServerRequest) => {
+      const method = req.method as Method;
+      let res: Response;
+      if (!req.url) {
+        throw ErrorCode.NotFound;
       }
-    })();
+      const [path, search] = req.url.split(/\?(.+)/);
+      try {
+        res =
+          (await this.respondStatic(path)) ||
+          (await this.respond(path, search, method, req));
+      } catch (err) {
+        let status = ErrorCode.InternalServerError;
+        if (typeof err === 'number') {
+          status = err;
+        }
+        res = [status, getErrorMessage(status)];
+      }
+      await req.respond(processResponse(res));
+    });
+    console.log(`listening on http://${addr}/`);
+    await p;
   }
 }
