@@ -37,6 +37,7 @@ export class App {
     }
   }
 
+  // respondStatic returns Response with static file gotten from a path. If a given path didn't match, this method returns null.
   private async respondStatic(path: string): Promise<Response> {
     let fileInfo: FileInfo;
     let staticFilePath = `${this.publicDir}${path}`;
@@ -64,6 +65,7 @@ export class App {
     return null;
   }
 
+  // respond returns Response with from informations of Request.
   private async respond(
     path,
     search: string,
@@ -147,13 +149,11 @@ export class App {
             (await this.respondStatic(path)) ||
             (await this.respond(path, search, method, req));
         } catch (err) {
-          res = ((): Response => {
-            let status = ErrorCode.InternalServerError;
-            if (typeof err === 'number') {
-              status = err;
-            }
-            return [status, getErrorMessage(status)];
-          })();
+          let status = ErrorCode.InternalServerError;
+          if (typeof err === 'number') {
+            status = err;
+          }
+          res = [status, getErrorMessage(status)];
         }
         await req.respond(processResponse(res));
       }
