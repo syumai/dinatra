@@ -76,12 +76,16 @@ app(get('/', async () => await open(htmlPath)));
 - You can use [dejs](https://github.com/syumai/dejs) (ejs for deno) as dinatra's template engine.
 
 ```ts
-import { renderFile } from 'https://syumai.github.io/dejs/dejs.ts';
+import { renderFile } from 'https://deno.land/x/dejs/dejs.ts';
 
 app(
   get('/', async () => await renderFile('index.ejs', { message: 'example' }))
 );
 ```
+
+### Host static files
+
+- Files in `./public` directory will be served static.
 
 ## Launch Options
 
@@ -136,3 +140,9 @@ interface HTTPResponse {
 - [ ] route params (like: `/users/:user_id/posts`)
 - [x] x-www-form-urlencoded
 - [x] application/json
+
+## Development
+
+### Testing
+
+- `make test`

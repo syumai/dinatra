@@ -44,6 +44,11 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
       path: 'nonExistencePath',
       expected: 'not found',
     },
+    {
+      name: 'invalid parent path',
+      path: '../static_test.ts',
+      expected: 'not found',
+    },
   ];
 
   for (const tc of testCases) {
