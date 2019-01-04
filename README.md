@@ -14,7 +14,7 @@ import {
   get,
   post,
   contentType,
-} from 'https://syumai.github.io/dinatra/dinatra.ts';
+} from 'https://denopkg.com/syumai/dinatra/mod.ts';
 
 app(
   get('/hello', () => 'hello'),
@@ -62,7 +62,7 @@ curl http://localhost:8080/info
 [`example/template/index.ts`](https://github.com/syumai/dinatra/tree/master/example/template)
 
 ```ts
-import { app, get } from '../../dinatra.ts';
+import { app, get } from 'https://denopkg.com/syumai/dinatra/mod.ts';
 import { cwd, open } from 'deno';
 
 const currentDir = cwd();
