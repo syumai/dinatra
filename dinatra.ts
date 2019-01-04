@@ -30,7 +30,8 @@ export class App {
 
   constructor(
     public readonly port = defaultPort,
-    public readonly publicDir = 'public'
+    public readonly publicDir = 'public',
+    public readonly staticEnabled = true
   ) {
     for (const method in Method) {
       this.handlerMap.set(method, new Map());
@@ -51,18 +52,18 @@ export class App {
       try {
         fileInfo = await stat(staticFilePath);
       } catch (e) {
-        // Do nothing here.
+        fileInfo = null; // FileInfo is not needed any more.
       }
     }
-    if (fileInfo && fileInfo.isFile()) {
-      return [
-        200,
-        // Add content length
-        detectedContentType(staticFilePath),
-        await open(staticFilePath),
-      ];
+    if (!fileInfo || !fileInfo.isFile()) {
+      return null;
     }
-    return null;
+    return [
+      200,
+      // Add content length
+      detectedContentType(staticFilePath),
+      await open(staticFilePath),
+    ];
   }
 
   // respond returns Response with from informations of Request.
@@ -118,11 +119,11 @@ export class App {
     }
 
     const ctx = { path, method, params };
-    const result = handler(ctx);
-    if (result instanceof Promise) {
-      return await (result as Promise<Response>);
+    const res = handler(ctx);
+    if (res instanceof Promise) {
+      return await (res as Promise<Response>);
     }
-    return result;
+    return res;
   }
 
   public handle(...handlerConfigs: HandlerConfig[]) {
@@ -142,7 +143,7 @@ export class App {
       const [path, search] = req.url.split(/\?(.+)/);
       try {
         res =
-          (await this.respondStatic(path)) ||
+          (this.staticEnabled && (await this.respondStatic(path))) ||
           (await this.respond(path, search, method, req));
       } catch (err) {
         let status = ErrorCode.InternalServerError;
