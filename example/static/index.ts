@@ -1,3 +1,3 @@
-import { app } from '../../dinatra.ts';
+import { app } from '../../mod.ts';
 
 app();

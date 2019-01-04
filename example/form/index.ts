@@ -1,5 +1,5 @@
-import { app, get, post } from '../../dinatra.ts';
-import { cwd, copy, open, stdout } from 'deno';
+import { app, get, post } from '../../mod.ts';
+import { cwd } from 'deno';
 import { renderFile } from 'https://syumai.github.io/dejs/dejs.ts';
 
 const templatePath = `${cwd()}/index.ejs`;

@@ -1,7 +1,7 @@
 import { test } from 'https://deno.land/x/testing/testing.ts';
 import { exit } from 'deno';
 import { assertEqual } from 'https://deno.land/x/pretty_assert@0.1.1/index.ts';
-import { App } from './dinatra.ts';
+import { App } from './mod.ts';
 
 const testPort = '8376';
 const host = `http://localhost:${testPort}`;

@@ -1,4 +1,4 @@
-import { app, get, post, contentType } from '../dinatra.ts';
+import { app, get, post, contentType } from '../mod.ts';
 
 app(
   get('/hello', () => 'hello'),
