@@ -146,3 +146,11 @@ interface HTTPResponse {
 ### Testing
 
 - `make test`
+
+## Author
+
+syumai
+
+## License
+
+MIT
