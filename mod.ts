@@ -1,4 +1,4 @@
-import { listenAndServe, ServerRequest } from 'https://deno.land/x/net/http.ts';
+import { listenAndServe, ServerRequest } from 'https://deno.land/x/http/http.ts';
 import { stat, FileInfo, open } from 'deno';
 import { Response, processResponse } from './response.ts';
 import { ErrorCode, getErrorMessage } from './errors.ts';
