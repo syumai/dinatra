@@ -1,6 +1,6 @@
-import { test } from 'https://deno.land/x/testing/testing.ts';
+import { test } from 'https://deno.land/x/testing/mod.ts';
 import { exit } from 'deno';
-import { assertEqual } from 'https://deno.land/x/pretty_assert@0.1.1/index.ts';
+import { assertEqual } from 'https://deno.land/x/pretty_assert@0.1.4/mod.ts';
 import { App } from './mod.ts';
 
 const testPort = '8376';
