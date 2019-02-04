@@ -1,5 +1,7 @@
 # dinatra
 
+[![Build Status](https://travis-ci.org/syumai/dinatra.svg?branch=master)](https://travis-ci.org/syumai/dinatra)
+
 - [Sinatra](http://sinatrarb.com/) like light weight web app framework for [deno](https://github.com/denoland/deno).
 - This app is using [Deno Standard Modules](https://github.com/denoland/deno_std).
 - **All features of this app are currently experimental**.
