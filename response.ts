@@ -39,43 +39,17 @@ export function processResponse(res: Response): HTTPResponse {
   let headerMap: HeaderMap = {};
   let rawBody: ResponseBody = '';
 
-  (() => {
-    {
-      const r = getStatusHeadersBodyResponse(res);
-      if (r) {
-        [status, headerMap, rawBody] = r;
-        return;
-      }
-    }
-    {
-      const r = getStatusBodyResponse(res);
-      if (r) {
-        [status, rawBody] = r;
-        return;
-      }
-    }
-    {
-      const r = getNumberResponse(res);
-      if (r) {
-        status = r;
-        return;
-      }
-    }
-    {
-      const r = getReaderResponse(res);
-      if (r) {
-        rawBody = r;
-        return;
-      }
-    }
-    {
-      const r = getStringResponse(res);
-      if (r) {
-        rawBody = r;
-        return;
-      }
-    }
-  })();
+  if (isStatusHeadersBodyResponse(res)) {
+    [status, headerMap, rawBody] = res;
+  } else if (isStatusBodyResponse(res)) {
+    [status, rawBody] = res;
+  } else if (isNumberResponse(res)) {
+    status = res;
+  } else if (isReaderResponse(res)) {
+    rawBody = res;
+  } else if (isStringResponse(res)) {
+    rawBody = res;
+  }
 
   let body: Uint8Array | Reader;
   if (typeof rawBody === 'string') {
@@ -91,42 +65,27 @@ export function processResponse(res: Response): HTTPResponse {
   };
 }
 
-function getStatusHeadersBodyResponse(
+function isStatusHeadersBodyResponse(
   res: Response
-): StatusHeadersBodyResponse {
+): res is StatusHeadersBodyResponse {
   const r = res as StatusHeadersBodyResponse;
-  if (r.length && r.length === 3) {
-    return r;
-  }
-  return null;
+  return r.length && r.length === 3;
 }
 
-function getStatusBodyResponse(res: Response): StatusBodyResponse {
+function isStatusBodyResponse(res: Response): res is StatusBodyResponse {
   const r = res as StatusBodyResponse;
-  if (r.length && r.length === 2) {
-    return r;
-  }
-  return null;
+  return r.length && r.length === 2;
 }
 
-function getNumberResponse(res: Response): number {
-  if (typeof res === 'number') {
-    return res;
-  }
-  return null;
+function isNumberResponse(res: Response): res is number {
+  return typeof res === 'number';
 }
 
-function getReaderResponse(res: Response): Reader {
+function isReaderResponse(res: Response): res is Reader {
   const r = res as Reader;
-  if (typeof r === 'object' && typeof r.read === 'function') {
-    return r;
-  }
-  return null;
+  return typeof r === 'object' && typeof r.read === 'function';
 }
 
-function getStringResponse(res: Response): string {
-  if (typeof res === 'string') {
-    return res;
-  }
-  return null;
+function isStringResponse(res: Response): res is string {
+  return typeof res === 'string';
 }
