@@ -1,4 +1,4 @@
-import { test, runTests } from 'https://deno.land/x/testing/mod.ts';
+import { test, runTests } from 'https://deno.land/x/std/testing/mod.ts';
 import { assertEqual } from 'https://deno.land/x/pretty_assert@0.1.5/mod.ts';
 import { exit } from 'deno';
 import { App } from './mod.ts';
