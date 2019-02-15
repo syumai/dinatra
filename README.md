@@ -92,7 +92,7 @@ app(
 ### Stop server
 
 ```ts
-const api = app(get('/', async () => 'hello'));
+const api = app(get('/', () => 'hello'));
 
 // Stop API after 5000ms.
 setTimeout(() => {
