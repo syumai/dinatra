@@ -1,8 +1,7 @@
-import {
-  listenAndServe,
-  ServerRequest,
-} from 'https://deno.land/x/http/server.ts';
-import { stat, FileInfo, open } from 'deno';
+import { ServerRequest, serve } from 'https://deno.land/x/std/http/server.ts';
+import { Deferred, defer } from 'https://deno.land/x/std/util/deferred.ts';
+import { decode } from 'https://deno.land/x/std/strings/strings.ts';
+import { stat, FileInfo, open, readAll } from 'deno';
 import { Response, processResponse } from './response.ts';
 import { ErrorCode, getErrorMessage } from './errors.ts';
 import { Method, Params, Handler, HandlerConfig } from './handler.ts';
@@ -22,14 +21,16 @@ export {
 
 type HandlerMap = Map<string, Map<string, Handler>>; // Map<method, Map<path, handler>>
 
-export async function app(...handlerConfigs: HandlerConfig[]) {
+export function app(...handlerConfigs: HandlerConfig[]): App {
   const a = new App(defaultPort);
   a.handle(...handlerConfigs);
-  return await a.serve();
+  a.serve();
+  return a;
 }
 
 export class App {
   private handlerMap: HandlerMap = new Map();
+  private cancel: Deferred = defer();
 
   constructor(
     public readonly port = defaultPort,
@@ -94,8 +95,7 @@ export class App {
         params[key] = value;
       }
     } else {
-      const body = await req.body();
-      const decodedBody = new TextDecoder('utf-8').decode(body);
+      const decodedBody = decode(await readAll(req.body));
       const contentType = req.headers.get('content-type');
       switch (contentType) {
         case 'application/x-www-form-urlencoded':
@@ -139,15 +139,16 @@ export class App {
 
   public async serve() {
     const addr = `0.0.0.0:${this.port}`;
-    const p = listenAndServe(addr, async (req: ServerRequest) => {
+    console.log(`listening on http://${addr}/`);
+    for await (const { req, res } of serve(addr, this.cancel)) {
       const method = req.method as Method;
-      let res: Response;
+      let r: Response;
       if (!req.url) {
         throw ErrorCode.NotFound;
       }
       const [path, search] = req.url.split(/\?(.+)/);
       try {
-        res =
+        r =
           (this.staticEnabled && (await this.respondStatic(path))) ||
           (await this.respond(path, search, method, req));
       } catch (err) {
@@ -155,11 +156,13 @@ export class App {
         if (typeof err === 'number') {
           status = err;
         }
-        res = [status, getErrorMessage(status)];
+        r = [status, getErrorMessage(status)];
       }
-      await req.respond(processResponse(res));
-    });
-    console.log(`listening on http://${addr}/`);
-    await p;
+      await res.respond(processResponse(r));
+    }
+  }
+
+  public close() {
+    this.cancel.resolve();
   }
 }

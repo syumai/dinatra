@@ -89,6 +89,17 @@ app(
 
 - Files in `./public` directory will be served static.
 
+### Stop server
+
+```ts
+const api = app(get('/', async () => 'hello'));
+
+// Stop API after 5000ms.
+setTimeout(() => {
+  api.close();
+}, 5000);
+```
+
 ## Launch Options
 
 ```console
