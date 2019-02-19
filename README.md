@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/syumai/dinatra.svg?branch=master)](https://travis-ci.org/syumai/dinatra)
 
-- [Sinatra](http://sinatrarb.com/) like light weight web app framework for [deno](https://github.com/denoland/deno).
+- [Sinatra](http://sinatrarb.com/) like light weight web app framework for [Deno](https://github.com/denoland/deno).
 - This app is using [Deno Standard Modules](https://github.com/denoland/deno_std).
 - **All features of this app are currently experimental**.
 
@@ -64,8 +64,8 @@ curl http://localhost:8080/info
 [`example/template/index.ts`](https://github.com/syumai/dinatra/tree/master/example/template)
 
 ```ts
+const { cwd, open } = Deno;
 import { app, get } from 'https://denopkg.com/syumai/dinatra/mod.ts';
-import { cwd, open } from 'deno';
 
 const currentDir = cwd();
 const htmlPath = `${currentDir}/index.html`;
