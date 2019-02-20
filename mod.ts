@@ -1,6 +1,12 @@
 const { stat, open, readAll } = Deno;
-import { ServerRequest, serve } from 'https://deno.land/x/std@v0.2.11/http/server.ts';
-import { Deferred, defer } from 'https://deno.land/x/std@v0.2.11/util/deferred.ts';
+import {
+  ServerRequest,
+  serve,
+} from 'https://deno.land/x/std@v0.2.11/http/server.ts';
+import {
+  Deferred,
+  defer,
+} from 'https://deno.land/x/std@v0.2.11/util/deferred.ts';
 import { decode } from 'https://deno.land/x/std/strings/strings.ts';
 import { Response, processResponse } from './response.ts';
 import { ErrorCode, getErrorMessage } from './errors.ts';
@@ -34,8 +40,8 @@ export class App {
 
   constructor(
     public readonly port = defaultPort,
-    public readonly publicDir = 'public',
-    public readonly staticEnabled = true
+    public readonly staticEnabled = true,
+    public readonly publicDir = 'public'
   ) {
     for (const method in Method) {
       this.handlerMap.set(method, new Map());
@@ -81,18 +87,20 @@ export class App {
   ): Promise<Response> {
     const map = this.handlerMap.get(method);
     if (!map) {
-      throw ErrorCode.NotFound;
+      return null;
     }
 
     const handler = map.get(path);
     if (!handler) {
-      throw ErrorCode.NotFound;
+      return null;
     }
 
     const params: Params = {};
     if (method === Method.GET) {
       if (search) {
-        for (const [key, value] of new URLSearchParams(`?${search}`).entries()) {
+        for (const [key, value] of new URLSearchParams(
+          `?${search}`
+        ).entries()) {
           params[key] = value;
         }
       }
@@ -151,8 +159,11 @@ export class App {
       const [path, search] = req.url.split(/\?(.+)/);
       try {
         r =
-          (this.staticEnabled && (await this.respondStatic(path))) ||
-          (await this.respond(path, search, method, req));
+          (await this.respond(path, search, method, req)) ||
+          (this.staticEnabled && (await this.respondStatic(path)));
+        if (!r) {
+          throw ErrorCode.NotFound;
+        }
       } catch (err) {
         let status = ErrorCode.InternalServerError;
         if (typeof err === 'number') {
