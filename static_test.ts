@@ -5,7 +5,7 @@ import { App } from './mod.ts';
 const testPort = '8376';
 const host = `http://localhost:${testPort}`;
 
-const app = new App(testPort, 'testdata/static');
+const app = new App(testPort, true, 'testdata/static');
 app.serve();
 
 interface testCase {

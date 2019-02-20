@@ -100,11 +100,28 @@ setTimeout(() => {
 }, 5000);
 ```
 
-## Launch Options
+## Flags
 
 ```console
 deno index.ts -p 8000 # or --port=8000
 # App runs on localhost:8000
+```
+
+## Initialization options
+
+### Customize static file hosting option
+
+```ts
+import { defaultPort } from 'https://denopkg.com/syumai/dinatra/constants.ts';
+import { App, get } from 'https://denopkg.com/syumai/dinatra/mod.ts';
+
+const app = new App(
+  defaultPort, // portNumber (number)
+  'dist', // public file directory's path (string)
+  false // option to enable static file hosting (boolean)
+);
+
+app.handle(get('/hello', () => 'hello'));
 ```
 
 ## Response Types
