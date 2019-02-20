@@ -1,6 +1,6 @@
 const { stat, open, readAll } = Deno;
-import { ServerRequest, serve } from 'https://deno.land/x/std/http/server.ts';
-import { Deferred, defer } from 'https://deno.land/x/std/util/deferred.ts';
+import { ServerRequest, serve } from 'https://deno.land/x/std@v0.2.11/http/server.ts';
+import { Deferred, defer } from 'https://deno.land/x/std@v0.2.11/util/deferred.ts';
 import { decode } from 'https://deno.land/x/std/strings/strings.ts';
 import { Response, processResponse } from './response.ts';
 import { ErrorCode, getErrorMessage } from './errors.ts';
