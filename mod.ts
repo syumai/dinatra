@@ -90,12 +90,14 @@ export class App {
     }
 
     const params: Params = {};
-    if (method === Method.GET && search) {
-      for (const [key, value] of new URLSearchParams(`?${search}`).entries()) {
-        params[key] = value;
+    if (method === Method.GET) {
+      if (search) {
+        for (const [key, value] of new URLSearchParams(`?${search}`).entries()) {
+          params[key] = value;
+        }
       }
     } else {
-      const decodedBody = decode(await readAll(req.body));
+      const decodedBody = decode(await readAll(req.body)); // FIXME: this line is broken
       const contentType = req.headers.get('content-type');
       switch (contentType) {
         case 'application/x-www-form-urlencoded':
