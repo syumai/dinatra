@@ -35,7 +35,7 @@ const testCases: Array<testCase> = [
   },
   {
     name: 'valid async handler',
-    registered: get('/async', () => 'async'),
+    registered: get('/async', async () => 'async'),
     path: 'async',
     method: Method.GET,
     expected: 'async',
