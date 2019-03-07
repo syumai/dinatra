@@ -1,5 +1,5 @@
-import { test, runTests } from 'https://deno.land/x/std/testing/mod.ts';
-import { assertEqual } from 'https://deno.land/x/std/testing/pretty.ts';
+import { test, runTests } from 'https://deno.land/std/testing/mod.ts';
+import { assertEquals } from 'https://deno.land/std/testing/asserts.ts';
 import { App, get, post } from './mod.ts';
 import { HandlerConfig, Method, Params } from './handler.ts';
 
@@ -86,8 +86,8 @@ for (const tc of testCases) {
       const actual = await res.text();
       const contentLength = res.headers.get('content-length');
 
-      assertEqual(actual, tc.expected);
-      assertEqual(contentLength, tc.expected.length.toString());
+      assertEquals(actual, tc.expected);
+      assertEquals(contentLength, tc.expected.length.toString());
 
       app.close();
       await sleep(100); // Workaround to avoid `AddrInUse`

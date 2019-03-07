@@ -1,5 +1,5 @@
-import { test, runTests } from 'https://deno.land/x/std/testing/mod.ts';
-import { assertEqual } from 'https://deno.land/x/std/testing/pretty.ts';
+import { test, runTests } from 'https://deno.land/std/testing/mod.ts';
+import { assertEquals } from 'https://deno.land/std/testing/asserts.ts';
 import { App } from './mod.ts';
 
 const testPort = '8376';
@@ -54,8 +54,8 @@ for (const tc of testCases) {
       const res = await fetch(`${host}/${tc.path}`);
       const actual = await res.text();
       const contentLength = res.headers.get('content-length');
-      assertEqual(actual, tc.expected);
-      assertEqual(contentLength, tc.expected.length.toString());
+      assertEquals(actual, tc.expected);
+      assertEquals(contentLength, tc.expected.length.toString());
     },
   });
 }

@@ -7,7 +7,7 @@ import {
   Deferred,
   defer,
 } from 'https://deno.land/x/std@v0.2.11/util/deferred.ts';
-import { decode } from 'https://deno.land/x/std/strings/strings.ts';
+import { decode } from 'https://deno.land/std/strings/strings.ts';
 import { Response, processResponse } from './response.ts';
 import { ErrorCode, getErrorMessage } from './errors.ts';
 import { Method, Params, Handler, HandlerConfig } from './handler.ts';

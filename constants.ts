@@ -1,5 +1,5 @@
 const { args } = Deno;
-import { parse } from 'https://deno.land/x/std/flags/mod.ts';
+import { parse } from 'https://deno.land/std/flags/mod.ts';
 
 export const parsedArgs: {
   p?: string;
