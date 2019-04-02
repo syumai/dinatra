@@ -1,8 +1,5 @@
 const { stat, open, readAll } = Deno;
-import {
-  ServerRequest,
-  serve,
-} from 'https://deno.land/x/std@v0.2.11/http/server.ts';
+import { ServerRequest, serve } from './std/http/server.ts';
 import {
   Deferred,
   defer,
