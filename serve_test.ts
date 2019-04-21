@@ -2,6 +2,7 @@ import { test, runTests } from 'https://deno.land/std/testing/mod.ts';
 import { assertEquals } from 'https://deno.land/std/testing/asserts.ts';
 import { App, get, post } from './mod.ts';
 import { HandlerConfig, Method, Params } from './handler.ts';
+const { exit } = Deno;
 
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
 
@@ -97,4 +98,5 @@ for (const tc of testCases) {
 
 (async () => {
   await runTests();
+  exit(0);
 })();
