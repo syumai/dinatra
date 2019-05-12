@@ -107,13 +107,15 @@ export class App {
       switch (contentType) {
         case 'application/x-www-form-urlencoded':
           for (const line of decodedBody.split('\n')) {
-            const lineParts = line.split(/^(.+?)=(.*)$/);
-            if (lineParts.length < 3) {
-              continue;
+            for (const pair of line.split('&')) {
+              const lineParts = pair.split(/^(.+?)=(.*)$/);
+              if (lineParts.length < 3) {
+                continue;
+              }
+              const key = lineParts[1];
+              const value = decodeURI(lineParts[2]);
+              params[key] = value;
             }
-            const key = lineParts[1];
-            const value = decodeURI(lineParts[2]);
-            params[key] = value;
           }
           break;
         case 'application/json':
