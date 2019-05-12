@@ -6,12 +6,15 @@
     <title>Form example</title>
   </head>
   <body>
-    <% if (message) { %>
-      <h2><%= message %></h2>
+    <% if (name) { %>
+    <div>name: <%= name %></div>
+    <% } %> <% if (message) { %>
+    <div>message: <%= message %></div>
     <% } %>
-    <form action="/name" method="POST">
-      <label for="name">Please input your name.</label><br />
-      <input type="text" name="name" /><br />
+    <form action="/posts" method="POST">
+      <label>Please input your name and message.</label><br />
+      <input type="text" name="name" placeholder="name" /><br />
+      <input type="text" name="message" placeholder="message" /><br />
       <button>Submit</button>
     </form>
   </body>

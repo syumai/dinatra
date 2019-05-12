@@ -32,7 +32,7 @@ app(
 ```
 
 ```console
-deno index.ts --allow-net --allow-read # or --allow-all / -A
+deno run --allow-net --allow-read index.ts # You can use --allow-all / -A too.
 # App runs on localhost:8080
 
 curl http://localhost:8080/hello
