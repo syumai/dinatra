@@ -32,7 +32,7 @@ app(
 ```
 
 ```console
-deno run --allow-net --allow-read index.ts # You can use --allow-all / -A too.
+deno run --allow-net --allow-read index.ts # Or simply: deno run -A index.ts
 # App runs on localhost:8080
 
 curl http://localhost:8080/hello
@@ -103,7 +103,7 @@ setTimeout(() => {
 ## Flags
 
 ```console
-deno index.ts -p 8000 # or --port=8000
+deno run -A index.ts -p 8000 # or --port=8000
 # App runs on localhost:8000
 ```
 
