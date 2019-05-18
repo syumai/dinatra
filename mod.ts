@@ -7,7 +7,8 @@ import {
 import { decode } from 'https://deno.land/std/strings/strings.ts';
 import { Response, processResponse } from './response.ts';
 import { ErrorCode, getErrorMessage } from './errors.ts';
-import { Method, Params, Handler, HandlerConfig } from './handler.ts';
+import { Method, Handler, HandlerConfig } from './handler.ts';
+import { Params, parseURLSearchParams } from './params.ts';
 import { defaultPort } from './constants.ts';
 import { detectedContentType } from './mime.ts';
 export { contentType, detectedContentType } from './mime.ts';
@@ -95,20 +96,14 @@ export class App {
     const params: Params = {};
     if (method === Method.GET) {
       if (search) {
-        for (const [key, value] of new URLSearchParams(search).entries()) {
-          params[key] = value;
-        }
+        Object.assign(params, parseURLSearchParams(search));
       }
     } else {
-      const decodedBody = decode(await readAll(req.body)); // FIXME: this line is broken
+      const decodedBody = decode(await readAll(req.body)); // FIXME: this line is should be refactored using Deno.Reader
       const contentType = req.headers.get('content-type');
       switch (contentType) {
         case 'application/x-www-form-urlencoded':
-          for (const [key, value] of new URLSearchParams(
-            decodedBody
-          ).entries()) {
-            params[key] = value;
-          }
+          Object.assign(params, parseURLSearchParams(decodedBody));
           break;
         case 'application/json':
           let obj: Object;
@@ -117,9 +112,7 @@ export class App {
           } catch (e) {
             throw ErrorCode.BadRequest;
           }
-          for (const [key, value] of Object.entries(obj)) {
-            params[key] = value;
-          }
+          Object.assign(params, obj);
           break;
       }
     }
@@ -159,6 +152,8 @@ export class App {
         let status = ErrorCode.InternalServerError;
         if (typeof err === 'number') {
           status = err;
+        } else {
+          console.error(err);
         }
         r = [status, getErrorMessage(status)];
       }

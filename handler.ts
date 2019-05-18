@@ -1,4 +1,5 @@
 import { Response } from './response.ts';
+import { Params } from './params.ts';
 
 export enum Method {
   GET = 'GET',
@@ -9,10 +10,6 @@ export enum Method {
   OPTIONS = 'OPTIONS',
   LINK = 'LINK',
   UNLINK = 'UNLINK',
-}
-
-export interface Params {
-  [key: string]: any;
 }
 
 export type Context = {
