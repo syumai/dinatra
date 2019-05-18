@@ -95,9 +95,7 @@ export class App {
     const params: Params = {};
     if (method === Method.GET) {
       if (search) {
-        for (const [key, value] of new URLSearchParams(
-          `?${search}`
-        ).entries()) {
+        for (const [key, value] of new URLSearchParams(search).entries()) {
           params[key] = value;
         }
       }
@@ -106,16 +104,10 @@ export class App {
       const contentType = req.headers.get('content-type');
       switch (contentType) {
         case 'application/x-www-form-urlencoded':
-          for (const line of decodedBody.split('\n')) {
-            for (const pair of line.split('&')) {
-              const lineParts = pair.split(/^(.+?)=(.*)$/);
-              if (lineParts.length < 3) {
-                continue;
-              }
-              const key = lineParts[1];
-              const value = decodeURI(lineParts[2]);
-              params[key] = value;
-            }
+          for (const [key, value] of new URLSearchParams(
+            decodedBody
+          ).entries()) {
+            params[key] = value;
           }
           break;
         case 'application/json':
