@@ -101,7 +101,11 @@ export class App {
     } else {
       const rawContentType = req.headers.get('content-type') || "application/octet-stream";
       const [contentType, ...typeParamsArray] = rawContentType.split(';').map(s => s.trim());
-      const typeParams = Object.assign({}, ...typeParamsArray.map(params => params.split('=')))
+      const typeParams = typeParamsArray.reduce((params, curr) => {
+        const [key, value] = curr.split('=');
+        params[key] = value;
+        return params;
+      }, {});
 
       const decoder = new TextDecoder(typeParams['charset'] || "utf-8"); // TODO: downcase `charset` key
       const decodedBody = decoder.decode(await readAll(req.body)); // FIXME: this line is should be refactored using Deno.Reader
