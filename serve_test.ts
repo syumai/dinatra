@@ -23,6 +23,7 @@ interface testCase {
   path: string;
   method: Method;
   params?: string | FormData;
+  headers?: Record<string, string>;
   expected: string;
 }
 
@@ -48,6 +49,23 @@ const testCases: Array<testCase> = [
     method: Method.GET,
     expected: 'john',
   },
+  {
+    name: 'valid post',
+    registered: post('/params', ({ params }) => [200, params.name]),
+    path: 'params',
+    params: JSON.stringify({ name: 'ben' }),
+    method: Method.POST,
+    expected: 'ben'
+  },
+  {
+    name: 'valid post with detailed content-type',
+    registered: post('/params', ({ params }) => [200, params.name]),
+    path: 'params',
+    params: JSON.stringify({ name: 'tom' }),
+    headers: {['content-type']: 'application/json; charset=utf-8'},
+    method: Method.POST,
+    expected: 'tom'
+  }
   // this test doesn't pass because deno's fetch is broken.
   // {
   //   name: 'valid post formdata',
@@ -79,7 +97,7 @@ for (const tc of testCases) {
       const reqInit: RequestInit = { method: tc.method };
       if (typeof tc.params === 'string') {
         reqInit.body = tc.params;
-        reqInit.headers = { 'content-type': 'application/json' };
+        reqInit.headers = Object.assign({ 'content-type': 'application/json' }, tc.headers);
       } else {
         reqInit.body = tc.params;
       }
