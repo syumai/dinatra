@@ -62,7 +62,7 @@ const testCases: Array<testCase> = [
     registered: post('/params', ({ params }) => [200, params.name]),
     path: 'params',
     params: JSON.stringify({ name: 'tom' }),
-    headers: {['content-type']: 'application/json; charset=utf-8'},
+    headers: { 'content-type': 'application/json; charset=utf-8' },
     method: Method.POST,
     expected: 'tom'
   }
@@ -97,7 +97,7 @@ for (const tc of testCases) {
       const reqInit: RequestInit = { method: tc.method };
       if (typeof tc.params === 'string') {
         reqInit.body = tc.params;
-        reqInit.headers = Object.assign({ 'content-type': 'application/json' }, tc.headers);
+        reqInit.headers = tc.headers || { 'content-type': 'application/json' };
       } else {
         reqInit.body = tc.params;
       }
