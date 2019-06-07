@@ -124,7 +124,7 @@ export class App {
           Object.assign(params, obj);
           break;
         case 'application/octet-stream':
-          params['data'] = decodedBody
+          // FIXME: we skip here for now, it should be implemented when Issue #41 resolved.
           break;
       }
     }
