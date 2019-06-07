@@ -99,8 +99,17 @@ export class App {
         Object.assign(params, parseURLSearchParams(search));
       }
     } else {
-      const decodedBody = decode(await readAll(req.body)); // FIXME: this line is should be refactored using Deno.Reader
-      const contentType = req.headers.get('content-type');
+      const rawContentType = req.headers.get('content-type') || "application/octet-stream";
+      const [contentType, ...typeParamsArray] = rawContentType.split(';').map(s => s.trim());
+      const typeParams = typeParamsArray.reduce((params, curr) => {
+        const [key, value] = curr.split('=');
+        params[key] = value;
+        return params;
+      }, {});
+
+      const decoder = new TextDecoder(typeParams['charset'] || "utf-8"); // TODO: downcase `charset` key
+      const decodedBody = decoder.decode(await readAll(req.body)); // FIXME: this line is should be refactored using Deno.Reader
+
       switch (contentType) {
         case 'application/x-www-form-urlencoded':
           Object.assign(params, parseURLSearchParams(decodedBody));
@@ -113,6 +122,9 @@ export class App {
             throw ErrorCode.BadRequest;
           }
           Object.assign(params, obj);
+          break;
+        case 'application/octet-stream':
+          // FIXME: we skip here for now, it should be implemented when Issue #41 resolved.
           break;
       }
     }
