@@ -55,7 +55,7 @@ const testCases: Array<testCase> = [
     path: 'params',
     params: JSON.stringify({ name: 'ben' }),
     method: Method.POST,
-    expected: 'ben'
+    expected: 'ben',
   },
   {
     name: 'valid post with detailed content-type',
@@ -64,8 +64,8 @@ const testCases: Array<testCase> = [
     params: JSON.stringify({ name: 'tom' }),
     headers: { 'content-type': 'application/json; charset=utf-8' },
     method: Method.POST,
-    expected: 'tom'
-  }
+    expected: 'tom',
+  },
   // this test doesn't pass because deno's fetch is broken.
   // {
   //   name: 'valid post formdata',
@@ -108,7 +108,8 @@ for (const tc of testCases) {
       assertEquals(actual, tc.expected);
       assertEquals(contentLength, tc.expected.length.toString());
 
-      app.close();
+      await sleep(100); // Workaround to avoid `AddrInUse`
+      // app.close();
       await sleep(100); // Workaround to avoid `AddrInUse`
     },
   });

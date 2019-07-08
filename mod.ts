@@ -1,10 +1,5 @@
-const { stat, open, readAll } = Deno;
-import { ServerRequest, serve } from './std/http/server.ts';
-import {
-  Deferred,
-  defer,
-} from 'https://deno.land/x/std@v0.2.11/util/deferred.ts';
-import { decode } from 'https://deno.land/std/strings/mod.ts';
+const { listen, stat, open, readAll } = Deno;
+import { Server, ServerRequest } from 'http://deno.land/std/http/server.ts';
 import { Response, processResponse } from './response.ts';
 import { ErrorCode, getErrorMessage } from './errors.ts';
 import { Method, Handler, HandlerConfig } from './handler.ts';
@@ -22,6 +17,7 @@ export {
   link,
   unlink,
 } from './handler.ts';
+export { Response } from './response.ts';
 
 type HandlerMap = Map<string, Map<string, Handler>>; // Map<method, Map<path, handler>>
 
@@ -34,7 +30,7 @@ export function app(...handlerConfigs: HandlerConfig[]): App {
 
 export class App {
   private handlerMap: HandlerMap = new Map();
-  private cancel: Deferred = defer();
+  private server: Server;
 
   constructor(
     public readonly port = defaultPort,
@@ -99,16 +95,19 @@ export class App {
         Object.assign(params, parseURLSearchParams(search));
       }
     } else {
-      const rawContentType = req.headers.get('content-type') || "application/octet-stream";
-      const [contentType, ...typeParamsArray] = rawContentType.split(';').map(s => s.trim());
+      const rawContentType =
+        req.headers.get('content-type') || 'application/octet-stream';
+      const [contentType, ...typeParamsArray] = rawContentType
+        .split(';')
+        .map(s => s.trim());
       const typeParams = typeParamsArray.reduce((params, curr) => {
         const [key, value] = curr.split('=');
         params[key] = value;
         return params;
       }, {});
 
-      const decoder = new TextDecoder(typeParams['charset'] || "utf-8"); // TODO: downcase `charset` key
-      const decodedBody = decoder.decode(await readAll(req.body)); // FIXME: this line is should be refactored using Deno.Reader
+      const decoder = new TextDecoder(typeParams['charset'] || 'utf-8'); // TODO: downcase `charset` key
+      const decodedBody = decoder.decode(await req.body());
 
       switch (contentType) {
         case 'application/x-www-form-urlencoded':
@@ -145,8 +144,10 @@ export class App {
 
   public async serve() {
     const addr = `0.0.0.0:${this.port}`;
+    const listener = listen('tcp', addr);
     console.log(`listening on http://${addr}/`);
-    for await (const { req, res } of serve(addr, this.cancel)) {
+    this.server = new Server(listener);
+    for await (const req of this.server) {
       const method = req.method as Method;
       let r: Response;
       if (!req.url) {
@@ -169,11 +170,11 @@ export class App {
         }
         r = [status, getErrorMessage(status)];
       }
-      await res.respond(processResponse(r));
+      await req.respond(processResponse(r));
     }
   }
 
   public close() {
-    this.cancel.resolve();
+    this.server.close();
   }
 }
