@@ -81,18 +81,14 @@ const testCases: Array<testCase> = [
   // },
 ];
 
-function newApp(handler: HandlerConfig): App {
-  const app = new App(testPort);
-  app.handle(handler);
-  return app;
-}
+const app = new App(testPort);
+app.serve();
 
 for (const tc of testCases) {
   test({
     name: tc.name,
     async fn() {
-      const app = newApp(tc.registered);
-      app.serve();
+      app.register(tc.registered);
 
       const reqInit: RequestInit = { method: tc.method };
       if (typeof tc.params === 'string') {
@@ -108,9 +104,8 @@ for (const tc of testCases) {
       assertEquals(actual, tc.expected);
       assertEquals(contentLength, tc.expected.length.toString());
 
-      await sleep(100); // Workaround to avoid `AddrInUse`
-      // app.close();
-      await sleep(100); // Workaround to avoid `AddrInUse`
+      const { path, method } = tc.registered;
+      app.unregister(path, method);
     },
   });
 }

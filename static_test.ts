@@ -63,6 +63,5 @@ for (const tc of testCases) {
 
 (async () => {
   await runTests();
-  app.close();
   exit(0);
 })();

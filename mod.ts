@@ -23,7 +23,7 @@ type HandlerMap = Map<string, Map<string, Handler>>; // Map<method, Map<path, ha
 
 export function app(...handlerConfigs: HandlerConfig[]): App {
   const a = new App(defaultPort);
-  a.handle(...handlerConfigs);
+  a.register(...handlerConfigs);
   a.serve();
   return a;
 }
@@ -136,10 +136,20 @@ export class App {
     return res;
   }
 
-  public handle(...handlerConfigs: HandlerConfig[]) {
+  // Deprecated
+  public handle = (...args) => {
+    console.error('handle is deprecated. Please use register instead of this.');
+    this.register(...args);
+  };
+
+  public register(...handlerConfigs: HandlerConfig[]) {
     for (const { path, method, handler } of handlerConfigs) {
       this.handlerMap.get(method).set(path, handler);
     }
+  }
+
+  public unregister(path: string, method: Method) {
+    this.handlerMap.get(method).delete(path);
   }
 
   public async serve() {
@@ -174,7 +184,8 @@ export class App {
     }
   }
 
-  public close() {
-    this.server.close();
-  }
+  // TODO: implement close
+  // public close() {
+  //   this.server.close();
+  // }
 }
