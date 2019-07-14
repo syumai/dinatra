@@ -1,5 +1,5 @@
-import { test, runTests } from 'https://deno.land/std/testing/mod.ts';
-import { assertEquals } from 'https://deno.land/std/testing/asserts.ts';
+import { test, runTests } from 'https://deno.land/std@v0.11.0/testing/mod.ts';
+import { assertEquals } from 'https://deno.land/std@v0.11.0/testing/asserts.ts';
 import { App, get, post } from './mod.ts';
 import { HandlerConfig, Method } from './handler.ts';
 const { exit } = Deno;

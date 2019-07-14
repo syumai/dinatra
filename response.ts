@@ -1,5 +1,5 @@
 import Reader = Deno.Reader;
-import { encode } from 'https://deno.land/std/strings/mod.ts';
+import { encode } from 'https://deno.land/std@v0.11.0/strings/mod.ts';
 
 // HeaderMap is a type of response headers.
 type HeaderMap =
