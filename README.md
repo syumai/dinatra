@@ -91,7 +91,7 @@ app(
 
 ### Stop server
 
-- Currently dinatra have no feature to stop server.
+- Currently dinatra has no feature to stop server.
 
 ## Flags
 
