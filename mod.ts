@@ -1,10 +1,8 @@
-const { stat, open, readAll } = Deno;
-import { ServerRequest, serve } from './std/http/server.ts';
+const { listen, stat, open, readAll } = Deno;
 import {
-  Deferred,
-  defer,
-} from 'https://deno.land/x/std@v0.2.11/util/deferred.ts';
-import { decode } from 'https://deno.land/std/strings/mod.ts';
+  Server,
+  ServerRequest,
+} from 'http://deno.land/std@v0.11.0/http/server.ts';
 import { Response, processResponse } from './response.ts';
 import { ErrorCode, getErrorMessage } from './errors.ts';
 import { Method, Handler, HandlerConfig } from './handler.ts';
@@ -22,19 +20,20 @@ export {
   link,
   unlink,
 } from './handler.ts';
+export { Response } from './response.ts';
 
 type HandlerMap = Map<string, Map<string, Handler>>; // Map<method, Map<path, handler>>
 
 export function app(...handlerConfigs: HandlerConfig[]): App {
   const a = new App(defaultPort);
-  a.handle(...handlerConfigs);
+  a.register(...handlerConfigs);
   a.serve();
   return a;
 }
 
 export class App {
   private handlerMap: HandlerMap = new Map();
-  private cancel: Deferred = defer();
+  private server: Server;
 
   constructor(
     public readonly port = defaultPort,
@@ -99,16 +98,19 @@ export class App {
         Object.assign(params, parseURLSearchParams(search));
       }
     } else {
-      const rawContentType = req.headers.get('content-type') || "application/octet-stream";
-      const [contentType, ...typeParamsArray] = rawContentType.split(';').map(s => s.trim());
+      const rawContentType =
+        req.headers.get('content-type') || 'application/octet-stream';
+      const [contentType, ...typeParamsArray] = rawContentType
+        .split(';')
+        .map(s => s.trim());
       const typeParams = typeParamsArray.reduce((params, curr) => {
         const [key, value] = curr.split('=');
         params[key] = value;
         return params;
       }, {});
 
-      const decoder = new TextDecoder(typeParams['charset'] || "utf-8"); // TODO: downcase `charset` key
-      const decodedBody = decoder.decode(await readAll(req.body)); // FIXME: this line is should be refactored using Deno.Reader
+      const decoder = new TextDecoder(typeParams['charset'] || 'utf-8'); // TODO: downcase `charset` key
+      const decodedBody = decoder.decode(await req.body());
 
       switch (contentType) {
         case 'application/x-www-form-urlencoded':
@@ -137,16 +139,28 @@ export class App {
     return res;
   }
 
-  public handle(...handlerConfigs: HandlerConfig[]) {
+  // Deprecated
+  public handle = (...args) => {
+    console.error('handle is deprecated. Please use register instead of this.');
+    this.register(...args);
+  };
+
+  public register(...handlerConfigs: HandlerConfig[]) {
     for (const { path, method, handler } of handlerConfigs) {
       this.handlerMap.get(method).set(path, handler);
     }
   }
 
+  public unregister(path: string, method: Method) {
+    this.handlerMap.get(method).delete(path);
+  }
+
   public async serve() {
     const addr = `0.0.0.0:${this.port}`;
+    const listener = listen('tcp', addr);
     console.log(`listening on http://${addr}/`);
-    for await (const { req, res } of serve(addr, this.cancel)) {
+    this.server = new Server(listener);
+    for await (const req of this.server) {
       const method = req.method as Method;
       let r: Response;
       if (!req.url) {
@@ -169,11 +183,12 @@ export class App {
         }
         r = [status, getErrorMessage(status)];
       }
-      await res.respond(processResponse(r));
+      await req.respond(processResponse(r));
     }
   }
 
-  public close() {
-    this.cancel.resolve();
-  }
+  // TODO: implement close
+  // public close() {
+  //   this.server.close();
+  // }
 }

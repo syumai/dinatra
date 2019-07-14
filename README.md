@@ -91,14 +91,7 @@ app(
 
 ### Stop server
 
-```ts
-const api = app(get('/', () => 'hello'));
-
-// Stop API after 5000ms.
-setTimeout(() => {
-  api.close();
-}, 5000);
-```
+- Currently dinatra has no feature to stop server.
 
 ## Flags
 
@@ -121,7 +114,7 @@ const app = new App(
   false // option to enable static file hosting (boolean)
 );
 
-app.handle(get('/hello', () => 'hello'));
+app.register(get('/hello', () => 'hello'));
 ```
 
 ## Response Types

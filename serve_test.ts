@@ -1,5 +1,5 @@
-import { test, runTests } from 'https://deno.land/std/testing/mod.ts';
-import { assertEquals } from 'https://deno.land/std/testing/asserts.ts';
+import { test, runTests } from 'https://deno.land/std@v0.11.0/testing/mod.ts';
+import { assertEquals } from 'https://deno.land/std@v0.11.0/testing/asserts.ts';
 import { App, get, post } from './mod.ts';
 import { HandlerConfig, Method } from './handler.ts';
 const { exit } = Deno;
@@ -55,7 +55,7 @@ const testCases: Array<testCase> = [
     path: 'params',
     params: JSON.stringify({ name: 'ben' }),
     method: Method.POST,
-    expected: 'ben'
+    expected: 'ben',
   },
   {
     name: 'valid post with detailed content-type',
@@ -64,8 +64,8 @@ const testCases: Array<testCase> = [
     params: JSON.stringify({ name: 'tom' }),
     headers: { 'content-type': 'application/json; charset=utf-8' },
     method: Method.POST,
-    expected: 'tom'
-  }
+    expected: 'tom',
+  },
   // this test doesn't pass because deno's fetch is broken.
   // {
   //   name: 'valid post formdata',
@@ -81,18 +81,14 @@ const testCases: Array<testCase> = [
   // },
 ];
 
-function newApp(handler: HandlerConfig): App {
-  const app = new App(testPort);
-  app.handle(handler);
-  return app;
-}
+const app = new App(testPort);
+app.serve();
 
 for (const tc of testCases) {
   test({
     name: tc.name,
     async fn() {
-      const app = newApp(tc.registered);
-      app.serve();
+      app.register(tc.registered);
 
       const reqInit: RequestInit = { method: tc.method };
       if (typeof tc.params === 'string') {
@@ -108,8 +104,8 @@ for (const tc of testCases) {
       assertEquals(actual, tc.expected);
       assertEquals(contentLength, tc.expected.length.toString());
 
-      app.close();
-      await sleep(100); // Workaround to avoid `AddrInUse`
+      const { path, method } = tc.registered;
+      app.unregister(path, method);
     },
   });
 }
