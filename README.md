@@ -166,6 +166,14 @@ interface HTTPResponse {
 
 ## Development
 
+### Update module
+
+- Please use [dem](https://github.com/syumai/dem)
+
+```
+dem update https://deno.land/std@v0.xx.x
+```
+
 ### Testing
 
 - `make test`
