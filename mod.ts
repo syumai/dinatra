@@ -2,7 +2,7 @@ const { listen, stat, open, readAll } = Deno;
 import {
   Server,
   ServerRequest,
-} from 'http://deno.land/std@v0.11.0/http/server.ts';
+} from './vendor/https/deno.land/std/http/server.ts';
 import { Response, processResponse } from './response.ts';
 import { ErrorCode, getErrorMessage } from './errors.ts';
 import { Method, Handler, HandlerConfig } from './handler.ts';
