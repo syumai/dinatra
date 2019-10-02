@@ -1,9 +1,9 @@
-import { test, runTests } from 'https://deno.land/std@v0.11.0/testing/mod.ts';
-import { assertEquals } from 'https://deno.land/std@v0.11.0/testing/asserts.ts';
+import { test, runTests } from './vendor/https/deno.land/std/testing/mod.ts';
+import { assertEquals } from './vendor/https/deno.land/std/testing/asserts.ts';
 import { App } from './mod.ts';
 const { exit } = Deno;
 
-const testPort = '8376';
+const testPort = 8376;
 const host = `http://localhost:${testPort}`;
 
 const app = new App(testPort, true, 'testdata/static');
