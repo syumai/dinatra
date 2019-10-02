@@ -1,6 +1,6 @@
 const { cwd } = Deno;
 import { app, get, post } from '../../mod.ts';
-import { renderFile } from 'https://syumai.github.io/dejs/dejs.ts';
+import { renderFile } from 'https://deno.land/x/dejs@0.3.1/mod.ts';
 
 const templatePath = `${cwd()}/index.ejs`;
 

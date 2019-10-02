@@ -156,9 +156,9 @@ export class App {
   }
 
   public async serve() {
-    const addr = `0.0.0.0:${this.port}`;
-    const listener = listen('tcp', addr);
-    console.log(`listening on http://${addr}/`);
+    const hostname = '0.0.0.0';
+    const listener = listen({ hostname, port: this.port });
+    console.log(`listening on http://${hostname}:${this.port}/`);
     this.server = new Server(listener);
     for await (const req of this.server) {
       const method = req.method as Method;

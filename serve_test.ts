@@ -14,7 +14,7 @@ interface RequestInit {
   method?: string;
 }
 
-const testPort = '8376';
+const testPort = 8376;
 const host = `http://localhost:${testPort}`;
 
 interface testCase {
