@@ -36,6 +36,27 @@ const testCases: Array<testCase> = [
     expected: 'basic',
   },
   {
+    name: 'valid basic handler with path parameter',
+    registered: get('/parameters/:param', ({ params }) => params.param),
+    path: 'parameters/p',
+    method: Method.GET,
+    expected: 'p',
+  },
+  {
+    name: 'valid basic handler with path parameters',
+    registered: get('/parameters/:param1/:param2', ({ params }) => `${params.param1} ${params.param2}`),
+    path: 'parameters/p1/p2',
+    method: Method.GET,
+    expected: 'p1 p2',
+  },
+  {
+    name: 'valid basic handler with path parameter at start',
+    registered: get('/:param', ({ params }) => params.param),
+    path: 'basic',
+    method: Method.GET,
+    expected: 'basic',
+  },
+  {
     name: 'valid async handler',
     registered: get('/async', async () => 'async'),
     path: 'async',
