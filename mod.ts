@@ -87,12 +87,41 @@ export class App {
       return null;
     }
 
-    const handler = map.get(path);
+    const params: Params = {};
+
+    let handler;
+
+    const REGEX_URI_MATCHES = /(:[^/]+)/g;
+    const REGEX_URI_REPLACEMENT = "([^/]+)";
+    const URI_PARAM_MARKER = ':';
+
+    Array.from(map.keys()).forEach((endpoint) => {
+      if (endpoint.indexOf(URI_PARAM_MARKER) !== -1) {
+        const matcher = endpoint.replace(REGEX_URI_MATCHES, REGEX_URI_REPLACEMENT);
+        const matches = path.match(`^${matcher}$`);
+
+        if (matches === null) {
+          return
+        }
+
+        const names = endpoint.match(REGEX_URI_MATCHES).map(name => name.replace(URI_PARAM_MARKER, ''));
+
+        matches.slice(1).forEach((m, i) => {
+          params[names[i]] = m
+        });
+
+        handler = map.get(endpoint)
+      }
+    });
+
+    if (!handler) {
+      handler = map.get(path)
+    }
+
     if (!handler) {
       return null;
     }
 
-    const params: Params = {};
     if (method === Method.GET) {
       if (search) {
         Object.assign(params, parseURLSearchParams(search));

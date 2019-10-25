@@ -20,6 +20,8 @@ import {
 
 app(
   get('/hello', () => 'hello'),
+  get('/hello/:id', ({ params }) => params.id),
+  get('/hello/:id/and/:name', ({ params }) => `:id is ${params.id}, :name is ${params.name}`),
   get('/error', () => [500, 'an error has occured']),
   get('/callName', ({ params }) => `Hi, ${params.name}!`),
   post('/callName', ({ params }) => `Hi, ${params.name}!`),
@@ -38,6 +40,14 @@ deno run --allow-net --allow-read index.ts # Or simply: deno run -A index.ts
 curl http://localhost:8080/hello
 # status: 200
 # body: hello
+
+curl http://localhost:8080/hello/1
+# status: 200
+# body: 1
+
+curl http://localhost:8080/hello/1/and/John
+# status: 200
+# body: :id is 1, :name is John
 
 curl http://localhost:8080/error
 # status: 500
@@ -160,7 +170,7 @@ interface HTTPResponse {
 ### Request Params
 
 - [x] URL query params (for GET)
-- [ ] route params (like: `/users/:user_id/posts`)
+- [x] route params (like: `/users/:user_id/posts`)
 - [x] x-www-form-urlencoded
 - [x] application/json
 
