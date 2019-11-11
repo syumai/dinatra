@@ -70,12 +70,12 @@ function isStatusHeadersBodyResponse(
   res: Response
 ): res is StatusHeadersBodyResponse {
   const r = res as StatusHeadersBodyResponse;
-  return r.length && r.length === 3;
+  return Array.isArray(r) && r.length === 3;
 }
 
 function isStatusBodyResponse(res: Response): res is StatusBodyResponse {
   const r = res as StatusBodyResponse;
-  return r.length && r.length === 2;
+  return Array.isArray(r) && r.length === 2;
 }
 
 function isNumberResponse(res: Response): res is number {
