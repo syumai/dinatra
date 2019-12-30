@@ -1,0 +1,19 @@
+name: test
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+  schedule:
+    - cron: '0 15 * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Setup Deno environment
+        uses: denolib/setup-deno@v1.1.0
+      - name: Run tests
+        run: make test
