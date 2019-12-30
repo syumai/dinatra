@@ -1,6 +1,6 @@
 # dinatra
 
-[![Build Status](https://github.com/syumai/dinatra/workflows/test/badge.svg?branch=master)](https://github.com/syumai/dejs/actions)
+[![Build Status](https://github.com/syumai/dinatra/workflows/test/badge.svg?branch=master)](https://github.com/syumai/dinatra/actions)
 
 - [Sinatra](http://sinatrarb.com/) like light weight web app framework for [Deno](https://github.com/denoland/deno).
 - This app is using [Deno Standard Modules](https://github.com/denoland/deno_std).
