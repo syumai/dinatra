@@ -9,8 +9,7 @@
         "/flags/mod.ts",
         "/http/server.ts",
         "/strings/mod.ts",
-        "/testing/asserts.ts",
-        "/testing/mod.ts"
+        "/testing/asserts.ts"
       ]
     }
   ]
