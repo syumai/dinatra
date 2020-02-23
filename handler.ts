@@ -15,17 +15,17 @@ export enum Method {
 export type Context = {
   readonly path: string;
   readonly method: Method;
-  params?: Params;
+  params: Params;
 };
 
 export type Handler = BasicHandler | AsyncHandler;
 
 export interface BasicHandler {
-  (ctx?: Context): Response;
+  (ctx: Context): Response;
 }
 
 export interface AsyncHandler {
-  (ctx?: Context): Promise<Response>;
+  (ctx: Context): Promise<Response>;
 }
 
 export type HandlerConfig = {

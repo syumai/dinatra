@@ -33,7 +33,7 @@ export function app(...handlerConfigs: HandlerConfig[]): App {
 
 export class App {
   private handlerMap: HandlerMap = new Map();
-  private server: Server;
+  private server!: Server;
 
   constructor(
     public readonly port = defaultPort,
@@ -46,8 +46,8 @@ export class App {
   }
 
   // respondStatic returns Response with static file gotten from a path. If a given path didn't match, this method returns null.
-  private async respondStatic(path: string): Promise<Response> {
-    let fileInfo: Deno.FileInfo;
+  private async respondStatic(path: string): Promise<Response | null> {
+    let fileInfo: Deno.FileInfo | null = null;
     let staticFilePath = `${this.publicDir}${path}`;
     try {
       fileInfo = await stat(staticFilePath);
@@ -77,11 +77,11 @@ export class App {
 
   // respond returns Response with from informations of Request.
   private async respond(
-    path,
+    path: string,
     search: string,
     method: Method,
     req: ServerRequest
-  ): Promise<Response> {
+  ): Promise<Response | null> {
     const map = this.handlerMap.get(method);
     if (!map) {
       return null;
@@ -101,10 +101,10 @@ export class App {
         const matches = path.match(`^${matcher}$`);
 
         if (matches === null) {
-          return
+          return null;
         }
 
-        const names = endpoint.match(REGEX_URI_MATCHES).map(name => name.replace(URI_PARAM_MARKER, ''));
+        const names = endpoint.match(REGEX_URI_MATCHES)!.map(name => name.replace(URI_PARAM_MARKER, ''));
 
         matches.slice(1).forEach((m, i) => {
           params[names[i]] = m
@@ -136,10 +136,10 @@ export class App {
         const [key, value] = curr.split('=');
         params[key] = value;
         return params;
-      }, {});
+      }, {} as { [key: string]: string });
 
       const decoder = new TextDecoder(typeParams['charset'] || 'utf-8'); // TODO: downcase `charset` key
-      const decodedBody = decoder.decode(await req.body());
+      const decodedBody = decoder.decode(await readAll(req.body));
 
       switch (contentType) {
         case 'application/x-www-form-urlencoded':
@@ -169,19 +169,19 @@ export class App {
   }
 
   // Deprecated
-  public handle = (...args) => {
+  public handle = (...args: HandlerConfig[]) => {
     console.error('handle is deprecated. Please use register instead of this.');
     this.register(...args);
   };
 
   public register(...handlerConfigs: HandlerConfig[]) {
     for (const { path, method, handler } of handlerConfigs) {
-      this.handlerMap.get(method).set(path, handler);
+      this.handlerMap.get(method)!.set(path, handler);
     }
   }
 
   public unregister(path: string, method: Method) {
-    this.handlerMap.get(method).delete(path);
+    this.handlerMap.get(method)!.delete(path);
   }
 
   public async serve() {
@@ -191,7 +191,7 @@ export class App {
     this.server = new Server(listener);
     for await (const req of this.server) {
       const method = req.method as Method;
-      let r: Response;
+      let r: Response | undefined;
       if (!req.url) {
         throw ErrorCode.NotFound;
       }
@@ -199,7 +199,8 @@ export class App {
       try {
         r =
           (await this.respond(path, search, method, req)) ||
-          (this.staticEnabled && (await this.respondStatic(path)));
+          (this.staticEnabled && (await this.respondStatic(path))) ||
+          undefined;
         if (!r) {
           throw ErrorCode.NotFound;
         }
