@@ -12,8 +12,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: Setup Deno environment
-        uses: denolib/setup-deno@v1.1.0
+        uses: denolib/setup-deno@v1.2.0
       - name: Run tests
         run: make test
