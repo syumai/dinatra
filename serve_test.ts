@@ -1,8 +1,7 @@
-import { test, runTests } from './vendor/https/deno.land/std/testing/mod.ts';
 import { assertEquals } from './vendor/https/deno.land/std/testing/asserts.ts';
 import { App, get, post } from './mod.ts';
 import { HandlerConfig, Method } from './handler.ts';
-const { exit } = Deno;
+const { exit, test, runTests } = Deno;
 
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
 
@@ -94,7 +93,7 @@ const testCases: Array<testCase> = [
   },
   {
     name: 'valid post with detailed content-type',
-    registered: post('/params', ({ params }) => [200, params.name]),
+    registered: post('/params', ({ params }) => [200, params!.name]),
     path: 'params',
     params: JSON.stringify({ name: 'tom' }),
     headers: { 'content-type': 'application/json; charset=utf-8' },
