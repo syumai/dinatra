@@ -1,7 +1,7 @@
 import { assertEquals } from './vendor/https/deno.land/std/testing/asserts.ts';
 import { App, get, post } from './mod.ts';
 import { HandlerConfig, Method } from './handler.ts';
-const { exit, test, runTests } = Deno;
+const { test, runTests } = Deno;
 
 interface RequestInit {
   body?: string | FormData;

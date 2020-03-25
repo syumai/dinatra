@@ -104,7 +104,7 @@ app(
 ```ts
 import { app, get } from 'https://denopkg.com/syumai/dinatra/mod.ts';
 
-const s = app(get('/', async () => await open(htmlPath)));
+const s = app(get('/', () => 'hello'));
 
 setTimeout(() => {
   s.close(); // close server after 5s.
@@ -146,7 +146,7 @@ type HeaderMap =
     };
 
 // ResponseBody is a type of response body.
-type ResponseBody = string | Reader;
+type ResponseBody = string | Deno.ReadCloser | Deno.Reader;
 
 /*
  *  Types of Response
@@ -165,11 +165,11 @@ export type Response =
   | number // HTTP status code only
   | ResponseBody; // Response body only
 
-// Response interface of deno.land/x/net/http
+// Response interface
 interface HTTPResponse {
   status?: number;
   headers?: Headers;
-  body?: Uint8Array | Reader;
+  body?: Uint8Array | Deno.ReadCloser | Deno.Reader;
 }
 ```
 
