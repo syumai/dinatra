@@ -3,10 +3,6 @@ import { App, get, post } from './mod.ts';
 import { HandlerConfig, Method } from './handler.ts';
 const { exit, test, runTests } = Deno;
 
-const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
-
-type HeadersInit = Headers | string[][] | Record<string, string>;
-
 interface RequestInit {
   body?: string | FormData;
   headers?: Record<string, string>;
@@ -57,7 +53,10 @@ const testCases: Array<testCase> = [
   },
   {
     name: 'valid basic handler with path parameters',
-    registered: get('/parameters/:param1/:param2', ({ params }) => `${params.param1} ${params.param2}`),
+    registered: get(
+      '/parameters/:param1/:param2',
+      ({ params }) => `${params.param1} ${params.param2}`
+    ),
     path: 'parameters/p1/p2',
     method: Method.GET,
     expected: 'p1 p2',
@@ -146,5 +145,5 @@ for (const tc of testCases) {
 
 (async () => {
   await runTests();
-  exit(0);
+  app.close();
 })();

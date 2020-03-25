@@ -4,7 +4,7 @@
     {
       "protocol": "https",
       "path": "deno.land/std",
-      "version": "v0.36.0",
+      "version": "v0.37.1",
       "files": [
         "/flags/mod.ts",
         "/http/server.ts",

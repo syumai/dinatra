@@ -16,7 +16,7 @@ import {
   get,
   post,
   contentType,
-} from 'https://denopkg.com/syumai/dinatra@0.8.5/mod.ts';
+} from 'https://denopkg.com/syumai/dinatra@0.9.0/mod.ts';
 
 app(
   get('/hello', () => 'hello'),
@@ -99,9 +99,17 @@ app(
 
 - Files in `./public` directory will be served static.
 
-### Stop server
+### Close server
 
-- Currently dinatra has no feature to stop server.
+```ts
+import { app, get } from 'https://denopkg.com/syumai/dinatra/mod.ts';
+
+const s = app(get('/', async () => await open(htmlPath)));
+
+setTimeout(() => {
+  s.close(); // close server after 5s.
+}, 5000);
+```
 
 ## Flags
 

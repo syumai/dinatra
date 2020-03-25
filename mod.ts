@@ -68,7 +68,7 @@ export class App {
     return [
       200,
       {
-        'Content-Length': fileInfo.len.toString(),
+        'Content-Length': fileInfo.size.toString(),
         ...detectedContentType(staticFilePath),
       },
       await open(staticFilePath),
@@ -92,30 +92,35 @@ export class App {
     let handler;
 
     const REGEX_URI_MATCHES = /(:[^/]+)/g;
-    const REGEX_URI_REPLACEMENT = "([^/]+)";
+    const REGEX_URI_REPLACEMENT = '([^/]+)';
     const URI_PARAM_MARKER = ':';
 
-    Array.from(map.keys()).forEach((endpoint) => {
+    Array.from(map.keys()).forEach(endpoint => {
       if (endpoint.indexOf(URI_PARAM_MARKER) !== -1) {
-        const matcher = endpoint.replace(REGEX_URI_MATCHES, REGEX_URI_REPLACEMENT);
+        const matcher = endpoint.replace(
+          REGEX_URI_MATCHES,
+          REGEX_URI_REPLACEMENT
+        );
         const matches = path.match(`^${matcher}$`);
 
         if (matches === null) {
           return null;
         }
 
-        const names = endpoint.match(REGEX_URI_MATCHES)!.map(name => name.replace(URI_PARAM_MARKER, ''));
+        const names = endpoint
+          .match(REGEX_URI_MATCHES)!
+          .map(name => name.replace(URI_PARAM_MARKER, ''));
 
         matches.slice(1).forEach((m, i) => {
-          params[names[i]] = m
+          params[names[i]] = m;
         });
 
-        handler = map.get(endpoint)
+        handler = map.get(endpoint);
       }
     });
 
     if (!handler) {
-      handler = map.get(path)
+      handler = map.get(path);
     }
 
     if (!handler) {
@@ -213,12 +218,24 @@ export class App {
         }
         r = [status, getErrorMessage(status)];
       }
-      await req.respond(processResponse(r));
+      const res = processResponse(r);
+      await req.respond(res);
+      if (isReadCloser(res.body)) {
+        res.body.close();
+      }
     }
   }
 
-  // TODO: implement close
-  // public close() {
-  //   this.server.close();
-  // }
+  public close() {
+    this.server.close();
+  }
+}
+
+function isReadCloser(obj: any): obj is Deno.ReadCloser {
+  const o = obj as Deno.ReadCloser;
+  return (
+    typeof o === 'object' &&
+    typeof o.read === 'function' &&
+    typeof o.close === 'function'
+  );
 }
