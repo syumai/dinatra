@@ -34,6 +34,15 @@ export type HandlerConfig = {
   handler: Handler;
 };
 
+
+export function redirect(path: string, code: number): Handler {
+
+  //[number, HeaderMap, ResponseBody];
+  return (context: Context) => 
+    [code, {location: path }, ""]; 
+}
+
+
 export function get(path: string, handler: Handler): HandlerConfig {
   return { path, method: Method.GET, handler };
 }
