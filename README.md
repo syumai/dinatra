@@ -192,6 +192,14 @@ interface HTTPResponse {
 dem update https://deno.land/std@v0.xx.x
 ```
 
+### Lint
+
+- `make lint`
+
+### Format
+
+- `make fmt`
+
 ### Testing
 
 - `make test`
