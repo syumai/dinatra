@@ -17,5 +17,7 @@ jobs:
         uses: denolib/setup-deno@master
       - name: Show Deno version
         run: deno --version
+      - name: Run lint
+        run: make lint
       - name: Run tests
         run: make test
