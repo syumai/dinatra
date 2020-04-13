@@ -17,7 +17,7 @@ import {
   post,
   redirect,
   contentType,
-} from "https://denopkg.com/syumai/dinatra@0.10.0/mod.ts";
+} from "https://denopkg.com/syumai/dinatra@0.10.1/mod.ts";
 
 app(
   get("/hello", () => "hello"),
