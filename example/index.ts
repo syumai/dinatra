@@ -1,4 +1,4 @@
-import { app, get, post, contentType } from "../mod.ts";
+import { app, get, post, redirect, contentType } from "../mod.ts";
 
 app(
   get("/hello", () => "hello"),
@@ -10,6 +10,7 @@ app(
   get("/error", () => [500, "an error has occured"]),
   get("/callName", ({ params }) => `Hi, ${params.name}!`),
   post("/callName", ({ params }) => `Hi, ${params.name}!`),
+  get("/foo", () => redirect("/hello", 302)), // redirect from /foo to /hello
   get("/info", () => [
     200,
     contentType("json"),
