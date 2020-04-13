@@ -1,4 +1,4 @@
-import { encode } from "./vendor/https/deno.land/std/strings/mod.ts";
+import { encode } from "./vendor/https/deno.land/std/encoding/utf8.ts";
 
 // HeaderMap is a type of response headers.
 type HeaderMap =
