@@ -39,8 +39,6 @@ export function redirect(path: string, code: number): Handler {
 
   //[number, HeaderMap, ResponseBody];
   return (context: Context) => {
-    console.log("context here: ", context);
-    console.log("code: ", code, "redirect to: ", path);
     return [code, {location: path }, ""]; 
   }
 }
