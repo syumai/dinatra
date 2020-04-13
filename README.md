@@ -15,21 +15,26 @@ import {
   app,
   get,
   post,
+  redirect,
   contentType,
-} from 'https://denopkg.com/syumai/dinatra@0.9.0/mod.ts';
+} from "https://denopkg.com/syumai/dinatra@0.10.0/mod.ts";
 
 app(
-  get('/hello', () => 'hello'),
-  get('/hello/:id', ({ params }) => params.id),
-  get('/hello/:id/and/:name', ({ params }) => `:id is ${params.id}, :name is ${params.name}`),
-  get('/error', () => [500, 'an error has occured']),
-  get('/callName', ({ params }) => `Hi, ${params.name}!`),
-  post('/callName', ({ params }) => `Hi, ${params.name}!`),
-  get('/info', () => [
+  get("/hello", () => "hello"),
+  get("/hello/:id", ({ params }) => params.id),
+  get(
+    "/hello/:id/and/:name",
+    ({ params }) => `:id is ${params.id}, :name is ${params.name}`,
+  ),
+  get("/error", () => [500, "an error has occured"]),
+  get("/callName", ({ params }) => `Hi, ${params.name}!`),
+  post("/callName", ({ params }) => `Hi, ${params.name}!`),
+  get("/foo", () => redirect("/hello", 302)), // redirect from /foo to /hello
+  get("/info", () => [
     200,
-    contentType('json'),
-    JSON.stringify({ app: 'dinatra', version: '0.0.1' }),
-  ])
+    contentType("json"),
+    JSON.stringify({ app: "dinatra", version: "0.0.1" }),
+  ]),
 );
 ```
 
@@ -60,6 +65,10 @@ curl http://localhost:8080/callName?name=John
 curl -d 'name=Tom' http://localhost:8080/callName
 # status: 200
 # body: Hi, Tom!
+
+curl http://localhost:8080/foo
+# status: 302
+# location: /hello
 
 curl http://localhost:8080/info
 # status: 200
@@ -180,7 +189,9 @@ interface HTTPResponse {
 - [x] URL query params (for GET)
 - [x] route params (like: `/users/:user_id/posts`)
 - [x] x-www-form-urlencoded
+- [x] redirect
 - [x] application/json
+- [ ] application/octet-stream
 
 ## Development
 
