@@ -1,11 +1,11 @@
-import { encode } from './vendor/https/deno.land/std/strings/mod.ts';
+import { encode } from "./vendor/https/deno.land/std/strings/mod.ts";
 
 // HeaderMap is a type of response headers.
 type HeaderMap =
   | Headers
   | {
-      [key: string]: any;
-    };
+    [key: string]: any;
+  };
 
 // ResponseBody is a type of response body.
 type ResponseBody = string | Deno.ReadCloser | Deno.Reader;
@@ -37,7 +37,7 @@ interface HTTPResponse {
 export function processResponse(res: Response): HTTPResponse {
   let status = 200;
   let headerMap: HeaderMap = {};
-  let rawBody: ResponseBody = '';
+  let rawBody: ResponseBody = "";
 
   if (isStatusHeadersBodyResponse(res)) {
     [status, headerMap, rawBody] = res;
@@ -54,7 +54,7 @@ export function processResponse(res: Response): HTTPResponse {
   }
 
   let body: Uint8Array | Deno.ReadCloser | Deno.Reader;
-  if (typeof rawBody === 'string') {
+  if (typeof rawBody === "string") {
     body = encode(rawBody);
   } else {
     body = rawBody;
@@ -68,7 +68,7 @@ export function processResponse(res: Response): HTTPResponse {
 }
 
 function isStatusHeadersBodyResponse(
-  res: Response
+  res: Response,
 ): res is StatusHeadersBodyResponse {
   const r = res as StatusHeadersBodyResponse;
   return Array.isArray(r) && r.length === 3;
@@ -80,23 +80,23 @@ function isStatusBodyResponse(res: Response): res is StatusBodyResponse {
 }
 
 function isNumberResponse(res: Response): res is number {
-  return typeof res === 'number';
+  return typeof res === "number";
 }
 
 function isReadCloserResponse(res: Response): res is Deno.ReadCloser {
   const r = res as Deno.ReadCloser;
   return (
-    typeof r === 'object' &&
-    typeof r.read === 'function' &&
-    typeof r.close === 'function'
+    typeof r === "object" &&
+    typeof r.read === "function" &&
+    typeof r.close === "function"
   );
 }
 
 function isReaderResponse(res: Response): res is Deno.Reader {
   const r = res as Deno.Reader;
-  return typeof r === 'object' && typeof r.read === 'function';
+  return typeof r === "object" && typeof r.read === "function";
 }
 
 function isStringResponse(res: Response): res is string {
-  return typeof res === 'string';
+  return typeof res === "string";
 }

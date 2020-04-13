@@ -1,15 +1,15 @@
-import { Response } from './response.ts';
-import { Params } from './params.ts';
+import { Response } from "./response.ts";
+import { Params } from "./params.ts";
 
 export enum Method {
-  GET = 'GET',
-  POST = 'POST',
-  PUT = 'PUT',
-  PATCH = 'PATCH',
-  DELETE = 'DELETE',
-  OPTIONS = 'OPTIONS',
-  LINK = 'LINK',
-  UNLINK = 'UNLINK',
+  GET = "GET",
+  POST = "POST",
+  PUT = "PUT",
+  PATCH = "PATCH",
+  DELETE = "DELETE",
+  OPTIONS = "OPTIONS",
+  LINK = "LINK",
+  UNLINK = "UNLINK",
 }
 
 export type Context = {
@@ -33,8 +33,6 @@ export type HandlerConfig = {
   method: Method;
   handler: Handler;
 };
-
-
 
 export function get(path: string, handler: Handler): HandlerConfig {
   return { path, method: Method.GET, handler };
