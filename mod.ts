@@ -82,6 +82,7 @@ export class App {
     method: Method,
     req: ServerRequest
   ): Promise<Response | null> {
+
     const map = this.handlerMap.get(method);
     if (!map) {
       return null;

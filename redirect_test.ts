@@ -8,21 +8,24 @@ const testPort = 8376;
 const host = `http://localhost:${testPort}`;
 const app = new App(testPort);
 
-app.register(get("original", redirect("/new", 301))); 
+
 app.serve();
 
-test("Redirection does return correct status code", async () => {
+test("Redirection does return new endpoint", async () => {
 
-    const response = await fetch(`${host}/original`, { method: "get" });
-    assertEquals(response.status, 301);
+    const original_endpoint = "/original"; 
+    const new_endpoint = "/new_endpoint"; 
+    const expected_body = `body at ${new_endpoint}`; 
+
+    app.register(get(original_endpoint, redirect(new_endpoint, 301))); 
+    app.register(get(new_endpoint, () => expected_body))
+
+    const response = await fetch(`${host}${original_endpoint}`, { method: "GET" });
+    
+    assertEquals(response.status, 200);
+    assertEquals((await response.text()), expected_body);
 });
 
-test("Redirection does return change location", async () => {
-
-    const response = await fetch(`${host}/original`);
-    const location = response.headers.get("location");
-    assertEquals(location, "/new");
-});
 
 (async () => {
     await runTests();
