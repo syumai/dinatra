@@ -1,6 +1,6 @@
 import { assertEquals } from './vendor/https/deno.land/std/testing/asserts.ts';
 import { App, get } from './mod.ts';
-import { redirect } from './handler.ts';
+import { redirect } from './helpers.ts';
 const { test, runTests } = Deno;
 
 
@@ -17,7 +17,7 @@ test("Redirection does return new endpoint", async () => {
     const new_endpoint = "/new_endpoint"; 
     const expected_body = `body at ${new_endpoint}`; 
 
-    app.register(get(original_endpoint, redirect(new_endpoint, 301))); 
+    app.register(get(original_endpoint, () => redirect(new_endpoint)));
     app.register(get(new_endpoint, () => expected_body))
 
     const response = await fetch(`${host}${original_endpoint}`, { method: "GET" });
