@@ -20,6 +20,7 @@ export {
   link,
   unlink,
 } from './handler.ts';
+export { redirect } from "./helpers.ts";
 export { Response } from './response.ts';
 
 type HandlerMap = Map<string, Map<string, Handler>>; // Map<method, Map<path, handler>>
@@ -82,6 +83,7 @@ export class App {
     method: Method,
     req: ServerRequest
   ): Promise<Response | null> {
+
     const map = this.handlerMap.get(method);
     if (!map) {
       return null;

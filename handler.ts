@@ -34,6 +34,8 @@ export type HandlerConfig = {
   handler: Handler;
 };
 
+
+
 export function get(path: string, handler: Handler): HandlerConfig {
   return { path, method: Method.GET, handler };
 }
