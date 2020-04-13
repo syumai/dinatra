@@ -14,23 +14,23 @@ export enum ErrorCode {
 export function getErrorMessage(errorCode: ErrorCode): string {
   switch (errorCode) {
     case ErrorCode.BadRequest:
-      return 'bad request';
+      return "bad request";
     case ErrorCode.Unauthorized:
-      return 'unauthorized';
+      return "unauthorized";
     case ErrorCode.Forbidden:
-      return 'forbidden';
+      return "forbidden";
     case ErrorCode.NotFound:
-      return 'not found';
+      return "not found";
     case ErrorCode.RequestTimeout:
-      return 'request timeout';
+      return "request timeout";
     case ErrorCode.PreconditionFailed:
-      return 'precondition failed';
+      return "precondition failed";
     case ErrorCode.InternalServerError:
-      return 'internal server error';
+      return "internal server error";
     case ErrorCode.NotImplemented:
-      return 'not implemented';
+      return "not implemented";
     case ErrorCode.ServiceUnavailable:
-      return 'service unavailable';
+      return "service unavailable";
   }
-  return '';
+  return "";
 }
