@@ -84,7 +84,7 @@ const testCases: Array<testCase> = [
   },
   {
     name: "valid post",
-    registered: post("/params", ({ params }) => [200, params.name]),
+    registered: post("/params", ({ body }) => [200, body.name]),
     path: "params",
     params: JSON.stringify({ name: "ben" }),
     method: Method.POST,
@@ -92,13 +92,13 @@ const testCases: Array<testCase> = [
   },
   {
     name: "valid post with detailed content-type",
-    registered: post("/params", ({ params }) => [200, params!.name]),
+    registered: post("/params", ({ body }) => [200, body!.name]),
     path: "params",
     params: JSON.stringify({ name: "tom" }),
     headers: { "content-type": "application/json; charset=utf-8" },
     method: Method.POST,
     expected: "tom",
-  },
+  }
   // this test doesn't pass because deno's fetch is broken.
   // {
   //   name: 'valid post formdata',
