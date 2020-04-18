@@ -55,7 +55,7 @@ export class App {
     } catch (e) {
       // Do nothing here.
     }
-    if (fileInfo && fileInfo.isDirectory()) {
+    if (fileInfo && fileInfo.isDirectory) {
       staticFilePath += "/index.html";
       try {
         fileInfo = await stat(staticFilePath);
@@ -63,7 +63,7 @@ export class App {
         fileInfo = null; // FileInfo is not needed any more.
       }
     }
-    if (!fileInfo || !fileInfo.isFile()) {
+    if (!fileInfo || !fileInfo.isFile) {
       return null;
     }
     return [
