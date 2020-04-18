@@ -98,7 +98,7 @@ const testCases: Array<testCase> = [
     headers: { "content-type": "application/json; charset=utf-8" },
     method: Method.POST,
     expected: "tom",
-  }
+  },
   // this test doesn't pass because deno's fetch is broken.
   // {
   //   name: 'valid post formdata',

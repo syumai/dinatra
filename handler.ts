@@ -16,7 +16,7 @@ export type Context = {
   readonly path: string;
   readonly method: Method;
   params: Params;
-  body: any
+  body: any;
 };
 
 export type Handler = BasicHandler | AsyncHandler;
