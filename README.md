@@ -106,6 +106,7 @@ app(
 
 ### Host static files
 
+- Requires `--allow-read`, e.g. `deno run --allow-read --allow-net app.ts`
 - Files in `./public` directory will be served static.
 
 ### Close server
