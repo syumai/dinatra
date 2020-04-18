@@ -83,7 +83,6 @@ export class App {
     method: Method,
     req: ServerRequest,
   ): Promise<Response | null> {
-
     const map = this.handlerMap.get(method);
 
     if (!map) {
@@ -98,7 +97,6 @@ export class App {
     const REGEX_URI_MATCHES = /(:[^/]+)/g;
     const REGEX_URI_REPLACEMENT = "([^/]+)";
     const URI_PARAM_MARKER = ":";
-
 
     Array.from(map.keys()).forEach((endpoint) => {
       if (endpoint.indexOf(URI_PARAM_MARKER) !== -1) {
@@ -205,7 +203,7 @@ export class App {
         throw ErrorCode.NotFound;
       }
       const [path, search] = req.url.split(/\?(.+)/);
-    
+
       try {
         r = (await this.respond(path, search, method, req)) ||
           (this.staticEnabled && (await this.respondStatic(path))) ||
