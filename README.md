@@ -28,7 +28,7 @@ app(
   ),
   get("/error", () => [500, "an error has occured"]),
   get("/callName", ({ params }) => `Hi, ${params.name}!`),
-  post("/callName", ({ params }) => `Hi, ${params.name}!`),
+  post("/callName", ({ body }) => `Hi, ${body.name}!`),
   get("/foo", () => redirect("/hello", 302)), // redirect from /foo to /hello
   get("/info", () => [
     200,
