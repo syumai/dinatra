@@ -47,15 +47,17 @@ export class App {
   }
 
   // respondStatic returns Response with static file gotten from a path. If a given path didn't match, this method returns null.
+  //FIXME: does not get js file in public directory, linked from HTML -> responds from normal 
   private async respondStatic(path: string): Promise<Response | null> {
     let fileInfo: Deno.FileInfo | null = null;
     let staticFilePath = `${this.publicDir}${path}`;
+
     try {
       fileInfo = await stat(staticFilePath);
     } catch (e) {
       // Do nothing here.
     }
-    if (fileInfo && fileInfo.isDirectory()) {
+    if (fileInfo && fileInfo.isDirectory) {
       staticFilePath += "/index.html";
       try {
         fileInfo = await stat(staticFilePath);
@@ -63,7 +65,7 @@ export class App {
         fileInfo = null; // FileInfo is not needed any more.
       }
     }
-    if (!fileInfo || !fileInfo.isFile()) {
+    if (!fileInfo || !fileInfo.isFile) {
       return null;
     }
     return [
@@ -124,6 +126,7 @@ export class App {
       handler = map.get(path);
     }
 
+
     if (!handler) {
       return null;
     }
@@ -133,6 +136,7 @@ export class App {
         Object.assign(params, parseURLSearchParams(search));
       }
     } else {
+
       const rawContentType = req.headers.get("content-type") ||
         "application/octet-stream";
       const [contentType, ...typeParamsArray] = rawContentType
@@ -166,6 +170,7 @@ export class App {
       }
     }
 
+    //TODO: investigate her. The file (client.js in my case) should result in a `null`/`undefined`, as it is static. Make sure why it returns a valid response anyways 
     const ctx = { path, method, params };
     const res = handler(ctx);
     if (res instanceof Promise) {
@@ -196,6 +201,7 @@ export class App {
     console.log(`listening on http://${hostname}:${this.port}/`);
     this.server = new Server(listener);
     for await (const req of this.server) {
+      
       const method = req.method as Method;
       let r: Response | undefined;
       if (!req.url) {
@@ -203,9 +209,10 @@ export class App {
       }
       const [path, search] = req.url.split(/\?(.+)/);
       try {
+
         r = (await this.respond(path, search, method, req)) ||
           (this.staticEnabled && (await this.respondStatic(path))) ||
-          undefined;
+          undefined; 
         if (!r) {
           throw ErrorCode.NotFound;
         }
