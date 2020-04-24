@@ -170,7 +170,11 @@ export class App {
       }
     }
 
-    //TODO: investigate her. The file (client.js in my case) should result in a `null`/`undefined`, as it is static. Make sure why it returns a valid response anyways 
+    //FIXME: find proper solutin for files that are linked from HTML (would default to standard GET and not static)
+    if (path.endsWith(".js")) {
+      return null; // assume this is a static file 
+    }
+
     const ctx = { path, method, params };
     const res = handler(ctx);
     if (res instanceof Promise) {
