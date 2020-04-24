@@ -47,9 +47,11 @@ export class App {
   }
 
   // respondStatic returns Response with static file gotten from a path. If a given path didn't match, this method returns null.
+  //FIXME: does not get js file in public directory, linked from HTML -> responds from normal
   private async respondStatic(path: string): Promise<Response | null> {
     let fileInfo: Deno.FileInfo | null = null;
     let staticFilePath = `${this.publicDir}${path}`;
+
     try {
       fileInfo = await stat(staticFilePath);
     } catch (e) {
@@ -164,6 +166,11 @@ export class App {
           // FIXME: we skip here for now, it should be implemented when Issue #41 resolved.
           break;
       }
+    }
+
+    //FIXME: find proper solutin for files that are linked from HTML (would default to standard GET and not static)
+    if (path.endsWith(".js")) {
+      return null; // assume this is a static file
     }
 
     const ctx = { path, method, params };
