@@ -9,6 +9,7 @@ import { Method, Handler, HandlerConfig } from "./handler.ts";
 import { Params, parseURLSearchParams } from "./params.ts";
 import { defaultPort } from "./constants.ts";
 import { detectedContentType } from "./mime.ts";
+import { ReadCloser } from "./io.ts";
 export { contentType, detectedContentType } from "./mime.ts";
 export {
   get,
@@ -231,8 +232,8 @@ export class App {
   }
 }
 
-function isReadCloser(obj: any): obj is Deno.ReadCloser {
-  const o = obj as Deno.ReadCloser;
+function isReadCloser(obj: any): obj is ReadCloser {
+  const o = obj as ReadCloser;
   return (
     typeof o === "object" &&
     typeof o.read === "function" &&

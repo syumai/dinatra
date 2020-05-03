@@ -17,7 +17,7 @@ import {
   post,
   redirect,
   contentType,
-} from "https://denopkg.com/syumai/dinatra@0.10.1/mod.ts";
+} from "https://denopkg.com/syumai/dinatra@0.12.0/mod.ts";
 
 app(
   get("/hello", () => "hello"),
@@ -156,7 +156,7 @@ type HeaderMap =
     };
 
 // ResponseBody is a type of response body.
-type ResponseBody = string | Deno.ReadCloser | Deno.Reader;
+type ResponseBody = string | ReadCloser | Deno.Reader;
 
 /*
  *  Types of Response
