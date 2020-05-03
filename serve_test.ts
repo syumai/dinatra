@@ -113,8 +113,6 @@ const testCases: Array<testCase> = [
   // },
 ];
 
-// const appCloser = createAppCloser(app, testCases.length);
-
 for (const tc of testCases) {
   Deno.test({
     name: tc.name,
