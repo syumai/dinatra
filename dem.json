@@ -4,7 +4,7 @@
     {
       "protocol": "https",
       "path": "deno.land/std",
-      "version": "v0.42.0",
+      "version": "v0.51.0",
       "files": [
         "/encoding/utf8.ts",
         "/flags/mod.ts",
