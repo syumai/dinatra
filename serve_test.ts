@@ -133,12 +133,12 @@ for (const tc of testCases) {
       const actual = await res.text();
       const contentLength = res.headers.get("content-length");
 
-      assertEquals(actual, tc.expected);
-      assertEquals(contentLength, tc.expected.length.toString());
-
       const { path, method } = tc.registered;
       app.unregister(path, method);
       app.close();
+
+      assertEquals(actual, tc.expected);
+      assertEquals(contentLength, tc.expected.length.toString());
     },
   });
 }

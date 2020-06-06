@@ -53,10 +53,11 @@ for (const tc of testCases) {
       const res = await fetch(`${host}/${tc.path}`);
       const actual = await res.text();
       const contentLength = res.headers.get("content-length");
-      assertEquals(actual, tc.expected);
-      assertEquals(contentLength, tc.expected.length.toString());
 
       app.close();
+
+      assertEquals(actual, tc.expected);
+      assertEquals(contentLength, tc.expected.length.toString());
     },
   });
 }
