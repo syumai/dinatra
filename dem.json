@@ -1,10 +1,9 @@
 {
-  "version": "0.1.1",
   "modules": [
     {
       "protocol": "https",
       "path": "deno.land/std",
-      "version": "v0.51.0",
+      "version": "v0.61.0",
       "files": [
         "/encoding/utf8.ts",
         "/flags/mod.ts",
@@ -12,5 +11,6 @@
         "/testing/asserts.ts"
       ]
     }
-  ]
+  ],
+  "aliases": {}
 }
