@@ -3,22 +3,22 @@ import {
   Server,
   ServerRequest,
 } from "./vendor/https/deno.land/std/http/server.ts";
-import { Response, processResponse } from "./response.ts";
+import { processResponse, Response } from "./response.ts";
 import { ErrorCode, getErrorMessage } from "./errors.ts";
-import { Method, Handler, HandlerConfig } from "./handler.ts";
+import { Handler, HandlerConfig, Method } from "./handler.ts";
 import { Params, parseURLSearchParams } from "./params.ts";
 import { defaultPort } from "./constants.ts";
 import { detectedContentType } from "./mime.ts";
 import { ReadCloser } from "./io.ts";
 export { contentType, detectedContentType } from "./mime.ts";
 export {
+  del,
   get,
+  link,
+  options,
+  patch,
   post,
   put,
-  patch,
-  del,
-  options,
-  link,
   unlink,
 } from "./handler.ts";
 export { redirect } from "./helpers.ts";
