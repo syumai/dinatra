@@ -1,4 +1,4 @@
-import { app, get, post, redirect, contentType } from "../mod.ts";
+import { app, contentType, get, post, redirect } from "../mod.ts";
 
 app(
   get("/hello", () => "hello"),
