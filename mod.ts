@@ -22,7 +22,7 @@ export {
   unlink,
 } from "./handler.ts";
 export { redirect } from "./helpers.ts";
-export { Response } from "./response.ts";
+export type { Response } from "./response.ts";
 
 type HandlerMap = Map<string, Map<string, Handler>>; // Map<method, Map<path, handler>>
 
