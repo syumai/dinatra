@@ -29,7 +29,7 @@ export type Response =
   | ResponseBody; // Response body only
 
 // Response interface
-interface HTTPResponse {
+export interface HTTPResponse {
   status?: number;
   headers?: Headers;
   body?: Uint8Array | ReadCloser | Deno.Reader;
