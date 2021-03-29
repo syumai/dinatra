@@ -4,9 +4,9 @@ import {
   ServerRequest,
 } from "./vendor/https/deno.land/std/http/server.ts";
 import {
+  HTTPResponse,
   processResponse,
   Response as AppResponse,
-  HTTPResponse,
 } from "./response.ts";
 import { ErrorCode, getErrorMessage } from "./errors.ts";
 import { Handler, HandlerConfig, Method } from "./handler.ts";
@@ -63,7 +63,7 @@ export class App {
   constructor(
     public readonly port = defaultPort,
     public readonly staticEnabled = true,
-    public readonly publicDir = "public"
+    public readonly publicDir = "public",
   ) {
     for (const method in Method) {
       this.handlerMap.set(method, new Map());
@@ -105,7 +105,7 @@ export class App {
     path: string,
     search: string,
     method: Method,
-    req: ServerRequest | Request
+    req: ServerRequest | Request,
   ): Promise<AppResponse | null> {
     const map = this.handlerMap.get(method);
     if (!map) {
@@ -124,7 +124,7 @@ export class App {
       if (endpoint.indexOf(URI_PARAM_MARKER) !== -1) {
         const matcher = endpoint.replace(
           REGEX_URI_MATCHES,
-          REGEX_URI_REPLACEMENT
+          REGEX_URI_REPLACEMENT,
         );
         const matches = path.match(`^${matcher}$`);
 
@@ -157,8 +157,8 @@ export class App {
         Object.assign(params, parseURLSearchParams(search));
       }
     } else {
-      const rawContentType =
-        req.headers.get("content-type") || "application/octet-stream";
+      const rawContentType = req.headers.get("content-type") ||
+        "application/octet-stream";
       const [contentType, ...typeParamsArray] = rawContentType
         .split(";")
         .map((s) => s.trim());
@@ -215,7 +215,7 @@ export class App {
   }
 
   public async handleRequest(
-    req: ServerRequest | Request
+    req: ServerRequest | Request,
   ): Promise<HTTPResponse> {
     const method = req.method as Method;
     let r: AppResponse | undefined;
@@ -224,8 +224,7 @@ export class App {
     }
     const [path, search] = req.url.split(/\?(.+)/);
     try {
-      r =
-        (await this.respond(path, search, method, req)) ||
+      r = (await this.respond(path, search, method, req)) ||
         (this.staticEnabled && (await this.respondStatic(path))) ||
         undefined;
       if (!r) {
@@ -273,7 +272,7 @@ export class App {
         new Response(body, {
           status: res.status,
           headers: res.headers,
-        })
+        }),
       );
     });
   }
