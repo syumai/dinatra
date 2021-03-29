@@ -173,7 +173,8 @@ export class App {
       if (isReader(req.body)) {
         decodedBody = decoder.decode(await Deno.readAll(req.body));
       } else {
-        decodedBody = (req?.body as unknown) as string;
+        const body = (req.body as unknown) as Body;
+        decodedBody = await body.text();
       }
 
       switch (contentType) {
