@@ -1,9 +1,13 @@
-const { listen, stat, open, readAll } = Deno;
+const { listen, stat, open } = Deno;
 import {
   Server,
   ServerRequest,
 } from "./vendor/https/deno.land/std/http/server.ts";
-import { processResponse, Response } from "./response.ts";
+import {
+  processResponse,
+  Response as AppResponse,
+  HTTPResponse,
+} from "./response.ts";
 import { ErrorCode, getErrorMessage } from "./errors.ts";
 import { Handler, HandlerConfig, Method } from "./handler.ts";
 import { Params, parseURLSearchParams } from "./params.ts";
@@ -26,11 +30,30 @@ export type { Response } from "./response.ts";
 
 type HandlerMap = Map<string, Map<string, Handler>>; // Map<method, Map<path, handler>>
 
+interface Responder {
+  respondWith(res: Response): void;
+  request: Request;
+}
+
 export function app(...handlerConfigs: HandlerConfig[]): App {
   const a = new App(defaultPort);
   a.register(...handlerConfigs);
   a.serve();
   return a;
+}
+
+export function hook(...handlerConfigs: HandlerConfig[]): App {
+  const a = new App(defaultPort);
+  a.register(...handlerConfigs);
+  a.hook();
+  return a;
+}
+
+function isReader(v: any): v is Deno.Reader {
+  if (v && v.read) {
+    return true;
+  }
+  return false;
 }
 
 export class App {
@@ -40,7 +63,7 @@ export class App {
   constructor(
     public readonly port = defaultPort,
     public readonly staticEnabled = true,
-    public readonly publicDir = "public",
+    public readonly publicDir = "public"
   ) {
     for (const method in Method) {
       this.handlerMap.set(method, new Map());
@@ -48,7 +71,7 @@ export class App {
   }
 
   // respondStatic returns Response with static file gotten from a path. If a given path didn't match, this method returns null.
-  private async respondStatic(path: string): Promise<Response | null> {
+  private async respondStatic(path: string): Promise<AppResponse | null> {
     let fileInfo: Deno.FileInfo | null = null;
     let staticFilePath = `${this.publicDir}${path}`;
     try {
@@ -82,8 +105,8 @@ export class App {
     path: string,
     search: string,
     method: Method,
-    req: ServerRequest,
-  ): Promise<Response | null> {
+    req: ServerRequest | Request
+  ): Promise<AppResponse | null> {
     const map = this.handlerMap.get(method);
     if (!map) {
       return null;
@@ -101,7 +124,7 @@ export class App {
       if (endpoint.indexOf(URI_PARAM_MARKER) !== -1) {
         const matcher = endpoint.replace(
           REGEX_URI_MATCHES,
-          REGEX_URI_REPLACEMENT,
+          REGEX_URI_REPLACEMENT
         );
         const matches = path.match(`^${matcher}$`);
 
@@ -134,8 +157,8 @@ export class App {
         Object.assign(params, parseURLSearchParams(search));
       }
     } else {
-      const rawContentType = req.headers.get("content-type") ||
-        "application/octet-stream";
+      const rawContentType =
+        req.headers.get("content-type") || "application/octet-stream";
       const [contentType, ...typeParamsArray] = rawContentType
         .split(";")
         .map((s) => s.trim());
@@ -146,7 +169,12 @@ export class App {
       }, {} as { [key: string]: string });
 
       const decoder = new TextDecoder(typeParams["charset"] || "utf-8"); // TODO: downcase `charset` key
-      const decodedBody = decoder.decode(await readAll(req.body));
+      let decodedBody: string;
+      if (isReader(req.body)) {
+        decodedBody = decoder.decode(await Deno.readAll(req.body));
+      } else {
+        decodedBody = (req?.body as unknown) as string;
+      }
 
       switch (contentType) {
         case "application/x-www-form-urlencoded":
@@ -170,16 +198,10 @@ export class App {
     const ctx = { path, method, params };
     const res = handler(ctx);
     if (res instanceof Promise) {
-      return await (res as Promise<Response>);
+      return await (res as Promise<AppResponse>);
     }
     return res;
   }
-
-  // Deprecated
-  public handle = (...args: HandlerConfig[]) => {
-    console.error("handle is deprecated. Please use register instead of this.");
-    this.register(...args);
-  };
 
   public register(...handlerConfigs: HandlerConfig[]) {
     for (const { path, method, handler } of handlerConfigs) {
@@ -191,40 +213,68 @@ export class App {
     this.handlerMap.get(method)!.delete(path);
   }
 
+  public async handleRequest(
+    req: ServerRequest | Request
+  ): Promise<HTTPResponse> {
+    const method = req.method as Method;
+    let r: AppResponse | undefined;
+    if (!req.url) {
+      throw ErrorCode.NotFound;
+    }
+    const [path, search] = req.url.split(/\?(.+)/);
+    try {
+      r =
+        (await this.respond(path, search, method, req)) ||
+        (this.staticEnabled && (await this.respondStatic(path))) ||
+        undefined;
+      if (!r) {
+        throw ErrorCode.NotFound;
+      }
+    } catch (err) {
+      let status = ErrorCode.InternalServerError;
+      if (typeof err === "number") {
+        status = err;
+      } else {
+        console.error(err);
+      }
+      r = [status, getErrorMessage(status)];
+    }
+    return processResponse(r);
+  }
+
   public async serve() {
     const hostname = "0.0.0.0";
     const listener = listen({ hostname, port: this.port });
     console.log(`listening on http://${hostname}:${this.port}/`);
     this.server = new Server(listener);
     for await (const req of this.server) {
-      const method = req.method as Method;
-      let r: Response | undefined;
-      if (!req.url) {
-        throw ErrorCode.NotFound;
-      }
-      const [path, search] = req.url.split(/\?(.+)/);
-      try {
-        r = (await this.respond(path, search, method, req)) ||
-          (this.staticEnabled && (await this.respondStatic(path))) ||
-          undefined;
-        if (!r) {
-          throw ErrorCode.NotFound;
-        }
-      } catch (err) {
-        let status = ErrorCode.InternalServerError;
-        if (typeof err === "number") {
-          status = err;
-        } else {
-          console.error(err);
-        }
-        r = [status, getErrorMessage(status)];
-      }
-      const res = processResponse(r);
+      const res = await this.handleRequest(req);
       await req.respond(res);
       if (isReadCloser(res.body)) {
         res.body.close();
       }
     }
+  }
+
+  public async hook() {
+    addEventListener("fetch", async (event) => {
+      const e = (event as unknown) as Responder;
+      const req = e.request;
+      const res = await this.handleRequest(req);
+      let rawData: Uint8Array;
+      if (isReader(res.body)) {
+        rawData = await Deno.readAll(res.body);
+      } else {
+        rawData = res.body as Uint8Array;
+      }
+      const body = new Blob([rawData], { type: "application/octet-binary" });
+      e.respondWith(
+        new Response(body, {
+          status: res.status,
+          headers: res.headers,
+        })
+      );
+    });
   }
 
   public close() {
