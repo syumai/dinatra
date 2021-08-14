@@ -54,7 +54,7 @@ const testCases: Array<testCase> = [
     name: "valid basic handler with path parameters",
     registered: get(
       "/parameters/:param1/:param2",
-      ({ params }) => `${params.param1} ${params.param2}`,
+      ({ params }) => `${params.param1} ${params.param2}`
     ),
     path: "parameters/p1/p2",
     method: Method.GET,
@@ -134,7 +134,7 @@ for (const tc of testCases) {
       const contentLength = res.headers.get("content-length");
 
       assertEquals(actual, tc.expected);
-      assertEquals(contentLength, tc.expected.length.toString());
+      assertEquals(contentLength, new Blob([tc.expected]).size.toString());
 
       const { path, method } = tc.registered;
       app.unregister(path, method);

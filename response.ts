@@ -1,12 +1,13 @@
-import { encode } from "./vendor/https/deno.land/std/encoding/utf8.ts";
 import { ReadCloser } from "./io.ts";
+
+const encoder = new TextEncoder();
 
 // HeaderMap is a type of response headers.
 type HeaderMap =
   | Headers
   | {
-    [key: string]: any;
-  };
+      [key: string]: any;
+    };
 
 // ResponseBody is a type of response body.
 type ResponseBody = string | ReadCloser | Deno.Reader;
@@ -56,7 +57,7 @@ export function processResponse(res: Response): HTTPResponse {
 
   let body: Uint8Array | ReadCloser | Deno.Reader;
   if (typeof rawBody === "string") {
-    body = encode(rawBody);
+    body = encoder.encode(rawBody);
   } else {
     body = rawBody;
   }
@@ -69,7 +70,7 @@ export function processResponse(res: Response): HTTPResponse {
 }
 
 function isStatusHeadersBodyResponse(
-  res: Response,
+  res: Response
 ): res is StatusHeadersBodyResponse {
   const r = res as StatusHeadersBodyResponse;
   return Array.isArray(r) && r.length === 3;
