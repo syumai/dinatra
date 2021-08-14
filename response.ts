@@ -1,5 +1,6 @@
-import { encode } from "./vendor/https/deno.land/std/encoding/utf8.ts";
 import { ReadCloser } from "./io.ts";
+
+const encoder = new TextEncoder();
 
 // HeaderMap is a type of response headers.
 type HeaderMap =
@@ -56,7 +57,7 @@ export function processResponse(res: Response): HTTPResponse {
 
   let body: Uint8Array | ReadCloser | Deno.Reader;
   if (typeof rawBody === "string") {
-    body = encode(rawBody);
+    body = encoder.encode(rawBody);
   } else {
     body = rawBody;
   }

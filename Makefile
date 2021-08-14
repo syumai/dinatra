@@ -1,4 +1,4 @@
-SHELL=/bin/bash
+SHELL=/usr/bin/env bash
 TARGET_SRC=$(shell shopt -s globstar && ls ./**/*.{ts,js,tsx} | grep -v ./vendor | grep -v ./testdata)
 
 test:

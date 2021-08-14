@@ -134,7 +134,7 @@ for (const tc of testCases) {
       const contentLength = res.headers.get("content-length");
 
       assertEquals(actual, tc.expected);
-      assertEquals(contentLength, tc.expected.length.toString());
+      assertEquals(contentLength, new Blob([tc.expected]).size.toString());
 
       const { path, method } = tc.registered;
       app.unregister(path, method);
