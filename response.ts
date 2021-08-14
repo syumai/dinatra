@@ -6,8 +6,8 @@ const encoder = new TextEncoder();
 type HeaderMap =
   | Headers
   | {
-      [key: string]: any;
-    };
+    [key: string]: any;
+  };
 
 // ResponseBody is a type of response body.
 type ResponseBody = string | ReadCloser | Deno.Reader;
@@ -70,7 +70,7 @@ export function processResponse(res: Response): HTTPResponse {
 }
 
 function isStatusHeadersBodyResponse(
-  res: Response
+  res: Response,
 ): res is StatusHeadersBodyResponse {
   const r = res as StatusHeadersBodyResponse;
   return Array.isArray(r) && r.length === 3;

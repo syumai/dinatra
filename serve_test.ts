@@ -54,7 +54,7 @@ const testCases: Array<testCase> = [
     name: "valid basic handler with path parameters",
     registered: get(
       "/parameters/:param1/:param2",
-      ({ params }) => `${params.param1} ${params.param2}`
+      ({ params }) => `${params.param1} ${params.param2}`,
     ),
     path: "parameters/p1/p2",
     method: Method.GET,
