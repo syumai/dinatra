@@ -22,7 +22,7 @@ Deno.test("Redirection does return new endpoint", async () => {
   );
 
   assertEquals(response.status, 200);
-  assertEquals((await response.text()), expectedBody);
+  assertEquals(await response.text(), expectedBody);
 
   app.close();
 });
